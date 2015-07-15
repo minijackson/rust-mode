@@ -2,6 +2,7 @@
 #define RUST_BASIC_RANGE_HPP
 
 #include "../exceptions/infinite_range_exception.hpp"
+#include "../exceptions/unknown_value_exception.hpp"
 
 #include <iterator>
 #include <limits>
@@ -72,12 +73,12 @@ namespace rust {
 			}
 		}
 
-		virtual CurrentType& operator++() {
+		CurrentType& operator++() {
 			++beginIt;
 			return *this;
 		}
 
-		virtual CurrentType operator++(int) {
+		CurrentType operator++(int) {
 			CurrentType other = *this;
 			++beginIt;
 			return other;
