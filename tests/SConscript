@@ -1,0 +1,7 @@
+#!/usr/bin/python
+
+env = Environment(CXXFLAGS=["-std=c++11", "-O2", "-Wall", "-Wextra", "-fdiagnostics-color=always"])
+#env = Environment(CXXFLAGS=["-std=c++11", "-O2", "-Wall", "-Wextra", "-fdiagnostics-color=always"], CXX="clang++")
+#env = Environment(CXXFLAGS=["-std=c++11", "-g", "-Wall", "-Wextra", "-fdiagnostics-color=always"])
+for source in env.Glob("*.cpp"):
+    env.Program(source, CPPPATH=[ "#src"], LIBS=["rust-mode", "boost_unit_test_framework"], LIBPATH=[".."])
