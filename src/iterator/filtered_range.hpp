@@ -63,19 +63,22 @@ namespace rust {
 			} else {
 				std::vector<T> temp;
 				auto inserter = std::back_inserter(temp);
+				OriginRange& origin = ParentType::origin;
 				if(!specifiedCount) {
-					std::copy_if(this->beginIt, this->endIt, inserter, predicate);
+					while(origin.begin() != origin.end()) {
+						if(predicate(*origin.begin())) {
+							*inserter++ = *origin.begin();
+						}
+						++origin;
+					}
 				} else {
 					unsigned int i = 0;
-					OriginRange& origin = ParentType::origin;
 					while((origin.begin() != origin.end()) && i < count) {
 						if(predicate(*origin.begin())) {
 							*inserter++ = *origin.begin();
-							++origin;
 							++i;
-						} else {
-							++origin;
 						}
+						++origin;
 					}
 				}
 				Container cont(temp.size());
