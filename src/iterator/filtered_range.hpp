@@ -84,6 +84,15 @@ namespace rust {
 			}
 		}
 
+		iterator begin() {
+			if(predicate(*ParentType::origin.begin())) {
+				return ParentType::origin.begin();
+			} else {
+				++(*this);
+				return ParentType::origin.begin();
+			}
+		}
+
 		CurrentType& operator++() {
 			while(ParentType::origin.begin() != ParentType::origin.end() && !predicate(*(++ParentType::origin).begin()));
 			return *this;
