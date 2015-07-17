@@ -4,6 +4,8 @@
 #include "range_modifier.hpp"
 #include "basic_range.hpp"
 
+#include "all_range_modifiers.hpp"
+
 #include <functional>
 #include <vector>
 #include <algorithm>
@@ -29,12 +31,10 @@ namespace rust {
 			: ParentType(range), predicate(predicate) {
 		}
 
-		FilteredRange(iterator beginIt, iterator endIt, Filter_t predicate)
-			: ParentType(beginIt, endIt), predicate(predicate) {
-		}
-
 		virtual Distance size() {
-			if(!specifiedCount) {
+			if(this->noEnd) {
+				throw InfiniteRangeException();
+			} if(!specifiedCount) {
 				throw UnknownValueException("Cannot know the size of a filtered range before consuming values");
 			} else {
 				return count;
@@ -47,6 +47,7 @@ namespace rust {
 
 		CurrentType take(size_t count) {
 			specifiedCount = true;
+			this->noEnd = false;
 			this->count = count;
 			return *this;
 		}
@@ -54,6 +55,11 @@ namespace rust {
 		FilteredRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>
 		filter(std::function<bool(T)> predicate) {
 			return FilteredRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this, predicate);
+		}
+
+		CycledRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>
+		cycle() {
+			return CycledRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this);
 		}
 
 		template<typename Container>

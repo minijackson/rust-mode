@@ -77,15 +77,17 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_chained_filter) {
 	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
 	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
 
-	std::vector<int> filtered = iterator.filter([] (int x) {
+	std::vector<int> filtered = iterator
+		.filter([] (int x) {
 				return x % 2 == 0;
+				})
+		.filter([] (int x) {
+			return x % 3 == 0;
 			})
-			.filter([] (int x) {
-				return x % 3 == 0;
-			})
-			.collect<std::vector<int> >();
+		.collect<std::vector<int> >();
 
 	std::vector<int> expected{6,12,18,24,30};
+
 	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filtered.begin()));
 }
 
@@ -93,15 +95,63 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_took_chained_filter) {
 	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
 	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
 
-	std::vector<int> filtered = iterator.filter([] (int x) {
+	std::vector<int> filtered = iterator
+		.filter([] (int x) {
 				return x % 2 == 0;
+				})
+		.filter([] (int x) {
+			return x % 3 == 0;
 			})
-			.filter([] (int x) {
-				return x % 3 == 0;
-			})
-			.take(3)
-			.collect<std::vector<int> >();
+		.take(3)
+		.collect<std::vector<int> >();
 
 	std::vector<int> expected{6,12,18};
+
 	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filtered.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_collected_cycled_iterator) {
+	std::vector<int> vec{1,2,3};
+	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+
+	std::vector<int> cycled = iterator.cycle().take(8).collect<std::vector<int> >(),
+		expected{1,2,3,1,2,3,1,2};
+	BOOST_CHECK(cycled.size() == 8);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), cycled.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_collected_filtered_cycled_iterator) {
+	std::vector<int> vec{1,2,3};
+	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+
+	std::vector<int> filteredCycled = iterator
+		.cycle()
+		.filter([] (int x) {
+			return x % 2 != 0;
+		})
+		.take(5)
+		.collect<std::vector<int> >();
+
+	std::vector<int> expected{1,3,1,3,1};
+	BOOST_CHECK(filteredCycled.size() == 5);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filteredCycled.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_collected_cycled_filtered_iterator) {
+	std::vector<int> vec{1,2,3};
+	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+
+	std::vector<int> filteredCycled = iterator
+		.filter([] (int x) {
+			return x % 2 != 0;
+		})
+		.cycle()
+		.take(5)
+		.cycle()
+		.take(6)
+		.collect<std::vector<int> >();
+
+	std::vector<int> expected{1,3,1,3,1,1};
+	BOOST_CHECK(filteredCycled.size() == 6);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filteredCycled.begin()));
 }

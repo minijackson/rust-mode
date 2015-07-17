@@ -3,7 +3,9 @@
 
 #include "../exceptions/infinite_range_exception.hpp"
 #include "basic_range.hpp"
+
 #include "filtered_range.hpp"
+#include "cycled_range.hpp"
 
 #include <iterator>
 #include <limits>
@@ -22,14 +24,19 @@ namespace rust {
 	> class Iterator : public BasicRange<iterator, Category, T, Distance, Pointer, Reference> {
 	public:
 		typedef Iterator<iterator, Category, T, Distance, Pointer, Reference> CurrentType;
-		typedef FilteredRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference> FilteredCurrentType;
 		typedef BasicRange<iterator, Category, T, Distance, Pointer, Reference> ParentType;
 
 		Iterator(iterator beginIt, iterator endIt) : ParentType(beginIt, endIt) {}
 		explicit Iterator(iterator beginIt) : ParentType(beginIt) {}
 
-		FilteredCurrentType filter(std::function<bool(T)> predicate) {
-			return FilteredCurrentType(*this, predicate);
+		FilteredRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>
+		filter(std::function<bool(T)> predicate) {
+			return FilteredRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this, predicate);
+		}
+
+		CycledRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>
+		cycle() {
+			return CycledRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this);
 		}
 	};
 
