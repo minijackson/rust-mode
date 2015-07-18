@@ -9,9 +9,19 @@
 #include <algorithm>
 #include <iterator>
 
+BOOST_AUTO_TEST_CASE(iterator_library_iter_function) {
+	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
+
+	rust::Iterator<std::vector<int>::iterator> rt(vec.begin(), vec.end());
+	auto lt = rust::iter(vec);
+
+	BOOST_CHECK_EQUAL(std::distance(rt.begin(), rt.end()), std::distance(lt.begin(), lt.end()));
+	BOOST_CHECK(std::equal(rt.begin(), rt.end(), lt.begin()));
+}
+
 BOOST_AUTO_TEST_CASE(iterator_library_vector_to_rust_iterator) {
 	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
-	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+	auto iterator = rust::iter(vec);
 
 	BOOST_CHECK(std::distance(vec.begin(), vec.end()) == std::distance(iterator.begin(), iterator.end()));
 	BOOST_CHECK(std::equal(vec.begin(), vec.end(), iterator.begin()));
@@ -28,7 +38,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_infinite_size_failure) {
 
 BOOST_AUTO_TEST_CASE(iterator_library_basic_take) {
 	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
-	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+	auto iterator = rust::iter(vec);
 
 	auto newIt = iterator.take(5);
 
@@ -40,7 +50,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_basic_take) {
 
 BOOST_AUTO_TEST_CASE(iterator_library_chained_take) {
 	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
-	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+	auto iterator = rust::iter(vec);
 
 	auto newIt = iterator.take(10).take(5);
 
@@ -52,7 +62,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_chained_take) {
 
 BOOST_AUTO_TEST_CASE(iterator_library_rust_iterator_to_list) {
 	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
-	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+	auto iterator = rust::iter(vec);
 
 	std::list<int> expected{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30},
 	               list = iterator.collect<std::list<int> >();
@@ -63,7 +73,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_rust_iterator_to_list) {
 
 BOOST_AUTO_TEST_CASE(iterator_library_collected_filter) {
 	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
-	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+	auto iterator = rust::iter(vec);
 
 	std::vector<int> filtered = iterator.filter([] (int x) {
 				return x % 2 == 0;
@@ -75,15 +85,15 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_filter) {
 
 BOOST_AUTO_TEST_CASE(iterator_library_collected_chained_filter) {
 	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
-	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+	auto iterator = rust::iter(vec);
 
 	std::vector<int> filtered = iterator
 		.filter([] (int x) {
-				return x % 2 == 0;
-				})
+			return x % 2 == 0;
+		})
 		.filter([] (int x) {
 			return x % 3 == 0;
-			})
+		})
 		.collect<std::vector<int> >();
 
 	std::vector<int> expected{6,12,18,24,30};
@@ -93,15 +103,15 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_chained_filter) {
 
 BOOST_AUTO_TEST_CASE(iterator_library_collected_took_chained_filter) {
 	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
-	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+	auto iterator = rust::iter(vec);
 
 	std::vector<int> filtered = iterator
 		.filter([] (int x) {
-				return x % 2 == 0;
-				})
+			return x % 2 == 0;
+		})
 		.filter([] (int x) {
 			return x % 3 == 0;
-			})
+		})
 		.take(3)
 		.collect<std::vector<int> >();
 
@@ -112,7 +122,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_took_chained_filter) {
 
 BOOST_AUTO_TEST_CASE(iterator_library_collected_cycled_iterator) {
 	std::vector<int> vec{1,2,3};
-	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+	auto iterator = rust::iter(vec);
 
 	std::vector<int> cycled = iterator.cycle().take(8).collect<std::vector<int> >(),
 		expected{1,2,3,1,2,3,1,2};
@@ -122,7 +132,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_cycled_iterator) {
 
 BOOST_AUTO_TEST_CASE(iterator_library_collected_filtered_cycled_iterator) {
 	std::vector<int> vec{1,2,3};
-	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+	auto iterator = rust::iter(vec);
 
 	std::vector<int> filteredCycled = iterator
 		.cycle()
@@ -139,7 +149,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_filtered_cycled_iterator) {
 
 BOOST_AUTO_TEST_CASE(iterator_library_collected_cycled_filtered_iterator) {
 	std::vector<int> vec{1,2,3};
-	rust::Iterator<std::vector<int>::iterator> iterator(vec.begin(), vec.end());
+	auto iterator = rust::iter(vec);
 
 	std::vector<int> filteredCycled = iterator
 		.filter([] (int x) {
