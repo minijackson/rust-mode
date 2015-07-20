@@ -19,6 +19,9 @@ namespace rust {
 		class Pointer   = T*,
 		class Reference = T&
 	> class BasicRange {
+
+		typedef BasicRange<iterator, Category, T, Distance, Pointer, Reference> CurrentType;
+
 	public:
 		BasicRange(iterator beginIt, iterator endIt)
 			: beginIt(beginIt), endIt(endIt), noEnd(false) {}
@@ -52,14 +55,6 @@ namespace rust {
 
 		bool hasEnd() {
 			return !noEnd;
-		}
-
-		typedef BasicRange<iterator, Category, T, Distance, Pointer, Reference> CurrentType;
-
-		CurrentType take(size_t count) {
-			auto newUpperIt = beginIt;
-			std::advance(newUpperIt, count);
-			return CurrentType(beginIt, newUpperIt);
 		}
 
 		template<typename Container>

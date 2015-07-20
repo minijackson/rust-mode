@@ -6,6 +6,8 @@
 
 #include "filtered_range.hpp"
 #include "cycled_range.hpp"
+#include "took_range.hpp"
+#include "all_range_modifiers.hpp"
 
 #include <iterator>
 #include <limits>
@@ -29,15 +31,7 @@ namespace rust {
 		Iterator(iterator beginIt, iterator endIt) : ParentType(beginIt, endIt) {}
 		explicit Iterator(iterator beginIt) : ParentType(beginIt) {}
 
-		FilteredRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>
-		filter(std::function<bool(T)> predicate) {
-			return FilteredRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this, predicate);
-		}
-
-		CycledRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>
-		cycle() {
-			return CycledRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this);
-		}
+		RANGE_MODIFIERS
 	};
 
 	template<class Container> Iterator<typename Container::iterator> iter(Container& cont) {

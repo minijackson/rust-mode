@@ -34,10 +34,8 @@ namespace rust {
 		virtual Distance size() {
 			if(this->noEnd) {
 				throw InfiniteRangeException();
-			} if(!specifiedCount) {
-				throw UnknownValueException("Cannot know the size of a filtered range before consuming values");
 			} else {
-				return count;
+				throw UnknownValueException("Cannot know the size of a filtered range before consuming values");
 			}
 		}
 
@@ -45,48 +43,24 @@ namespace rust {
 			throw UnknownValueException("Cannot know if a filtered range is empty before consuming values");
 		}
 
-		CurrentType take(size_t count) {
-			specifiedCount = true;
-			this->noEnd = false;
-			this->count = count;
-			return *this;
-		}
-
-		FilteredRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>
-		filter(std::function<bool(T)> predicate) {
-			return FilteredRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this, predicate);
-		}
-
-		CycledRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>
-		cycle() {
-			return CycledRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this);
-		}
+		RANGE_MODIFIERS
 
 		template<typename Container>
 		Container collect() {
-			if(this->noEnd) {
+			if(!this->origin.hasEnd()) {
 				throw InfiniteRangeException();
 			} else {
 				std::vector<T> temp;
 				auto inserter = std::back_inserter(temp);
 				OriginRange& origin = ParentType::origin;
-				if(!specifiedCount) {
-					while(origin.begin() != origin.end()) {
-						if(predicate(*origin.begin())) {
-							*inserter++ = *origin.begin();
-						}
-						++origin;
+
+				while(origin.begin() != origin.end()) {
+					if(predicate(*origin.begin())) {
+						*inserter++ = *origin.begin();
 					}
-				} else {
-					unsigned int i = 0;
-					while((origin.begin() != origin.end()) && i < count) {
-						if(predicate(*origin.begin())) {
-							*inserter++ = *origin.begin();
-							++i;
-						}
-						++origin;
-					}
+					++origin;
 				}
+
 				Container cont(temp.size());
 				std::copy(temp.begin(), temp.end(), cont.begin());
 				return cont;
@@ -115,8 +89,6 @@ namespace rust {
 
 	private:
 		Filter_t predicate;
-		size_t count = 0;
-		bool specifiedCount = false;
 	};
 
 }

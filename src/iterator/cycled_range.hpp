@@ -23,7 +23,7 @@ namespace rust {
 
 	public:
 		CycledRange(OriginRange range)
-			: ParentType(range), cyclingRange(range) {
+			: ParentType(range), backup(range) {
 			this->noEnd = true;
 		}
 
@@ -35,78 +35,32 @@ namespace rust {
 			return this->origin.empty();
 		}
 
-		CurrentType take(size_t count) {
-			specifiedCount = true;
-			this->noEnd = false;
-			this->count = count;
-			return *this;
-		}
-
-		FilteredRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>
-		filter(std::function<bool(T)> predicate) {
-			return FilteredRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this, predicate);
-		}
-
-		CycledRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>
-		cycle() {
-			return CycledRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this);
-		}
+		RANGE_MODIFIERS
 
 		template<typename Container>
 		Container collect() {
-			if(this->noEnd) {
-				throw InfiniteRangeException();
-			} else {
-				Container result(count);
-				for(auto& value : result) {
-					value = *cyclingRange.begin();
-					++(*this);
-				}
-				return result;
-			}
+			throw InfiniteRangeException();
 		}
 
 		CurrentType& operator++() {
-			++progress;
-			if(specifiedCount && progress > count) {
-				ended = true;
-			} else {
-				++cyclingRange;
-				if(cyclingRange.begin() == this->origin.end()) {
-					cyclingRange = this->origin;
-				}
+			++this->origin;
+			if(this->origin.begin() == this->origin.end()) {
+				this->origin = backup;
 			}
 			return *this;
 		}
 
 		CurrentType& operator++(int) {
 			CurrentType other = *this;
-			++progress;
-			if(specifiedCount && progress > count) {
-				ended = true;
-			} else {
-				++cyclingRange;
-				if(cyclingRange.begin() == this->origin.end()) {
-					cyclingRange.begin() = this->origin.begin();
-				}
+			++this->origin;
+			if(this->origin.begin() == this->origin.end()) {
+				this->origin = backup;
 			}
 			return other;
 		}
 
-		iterator begin() {
-			if(ended) {
-				return this->origin.end();
-			} else {
-				return cyclingRange.begin();
-			}
-		}
-
 	private:
-		bool specifiedCount = false;
-		bool ended = false;
-		size_t count;
-		size_t progress = 0;
-		OriginRange cyclingRange;
+		OriginRange backup;
 	};
 
 }
