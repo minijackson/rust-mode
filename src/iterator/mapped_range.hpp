@@ -48,7 +48,7 @@ namespace rust {
 			}
 		}
 
-		iterator begin() {
+		iterator& begin() {
 			return this->origin.begin();
 		}
 
@@ -56,7 +56,7 @@ namespace rust {
 			return mapFunc(this->origin.beginValue());
 		}
 
-		iterator end() {
+		iterator& end() {
 			return this->origin.end();
 		}
 

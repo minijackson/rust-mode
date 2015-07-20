@@ -65,7 +65,7 @@ namespace rust {
 			}
 		}
 
-		iterator begin() {
+		iterator& begin() {
 			if(predicate(this->origin.beginValue())) {
 				return this->origin.begin();
 			} else {
@@ -78,7 +78,7 @@ namespace rust {
 			return this->origin.beginValue();
 		}
 
-		iterator end() {
+		iterator& end() {
 			return this->origin.end();
 		}
 

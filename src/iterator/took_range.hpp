@@ -62,7 +62,7 @@ namespace rust {
 			return other;
 		}
 
-		iterator begin() {
+		iterator& begin() {
 			if(progress >= count) {
 				return this->origin.end();
 			} else {
@@ -74,7 +74,7 @@ namespace rust {
 			return this->origin.beginValue();
 		}
 
-		iterator end() {
+		iterator& end() {
 			return this->origin.end();
 		}
 

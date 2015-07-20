@@ -30,11 +30,11 @@ namespace rust {
 		virtual Distance size()  = 0;
 		virtual bool     empty() = 0;
 
-		iterator begin() {
+		iterator& begin() {
 			return origin.begin();
 		}
 
-		iterator end() {
+		iterator& end() {
 			return origin.end();
 		}
 
