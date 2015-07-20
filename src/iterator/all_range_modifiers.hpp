@@ -30,6 +30,17 @@ namespace rust {
 		class Pointer,
 		class Reference
 	> class TookRange;
+
+	template<
+		class OriginRange,
+		class iterator,
+		class Category,
+		class T,
+		class Distance,
+		class Pointer,
+		class Reference
+	> class MappedRange;
+
 }
 
 #define RANGE_MODIFIERS \
@@ -44,5 +55,10 @@ namespace rust {
 		TookRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference> \
 		take(size_t size) { \
 			return TookRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this, size); \
+		} \
+		MappedRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference> \
+		map(std::function<T(T)> map) { \
+			return MappedRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this, map); \
 		}
+		
 #endif

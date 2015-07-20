@@ -181,3 +181,54 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_cycled_filtered_iterator) {
 	BOOST_CHECK_EQUAL(cycledFiltered.size(), 12);
 	BOOST_CHECK(std::equal(expected.begin(), expected.end(), cycledFiltered.begin()));
 }
+
+BOOST_AUTO_TEST_CASE(iterator_library_collected_mapped_iterator) {
+	std::vector<int> vec{1,2,3,4,5};
+	auto iterator = rust::iter(vec);
+
+	std::vector<int> mapped = iterator
+		.map([] (int x) {
+			return x*2;
+		})
+		.collect<std::vector<int> >();
+
+	std::vector<int> expected{2,4,6,8,10};
+	BOOST_CHECK_EQUAL(mapped.size(), 5);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), mapped.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_filtered_mapped_iterator) {
+	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10};
+	auto iterator = rust::iter(vec);
+
+	std::vector<int> filteredMapped = iterator
+		.map([] (int x) {
+			return x*2;
+		})
+		.filter([] (int x) {
+			return x % 4 == 0;
+		})
+		.collect<std::vector<int> >();
+
+	std::vector<int> expected{4,8,12,16,20};
+	BOOST_CHECK_EQUAL(filteredMapped.size(), 5);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filteredMapped.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_mapped_filtered_iterator) {
+	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10};
+	auto iterator = rust::iter(vec);
+
+	std::vector<int> mappedFiltered = iterator
+		.filter([] (int x) {
+			return x % 2 == 0;
+		})
+		.map([] (int x) {
+			return x*2;
+		})
+		.collect<std::vector<int> >();
+
+	std::vector<int> expected{4,8,12,16,20};
+	BOOST_CHECK_EQUAL(mappedFiltered.size(), 5);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), mappedFiltered.begin()));
+}

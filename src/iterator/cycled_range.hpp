@@ -59,6 +59,10 @@ namespace rust {
 			return other;
 		}
 
+		T beginValue() {
+			return this->origin.beginValue();
+		}
+
 	private:
 		OriginRange backup;
 	};

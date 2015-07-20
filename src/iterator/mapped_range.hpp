@@ -1,9 +1,11 @@
-#ifndef RUST_TOOK_RANGE_HPP
-#define RUST_TOOK_RANGE_HPP
+#ifndef RUST_MAPPED_RANGE_HPP
+#define RUST_MAPPED_RANGE_HPP
 
 #include "range_modifier.hpp"
 #include "all_range_modifiers.hpp"
 
+#include <vector>
+#include <functional>
 #include <iterator>
 
 namespace rust {
@@ -16,22 +18,22 @@ namespace rust {
 		class Distance  = std::ptrdiff_t,
 		class Pointer   = T*,
 		class Reference = T&
-	> class TookRange : public RangeModifier<OriginRange, iterator, Category, T, Distance, Pointer, Reference> {
+	> class MappedRange : public RangeModifier<OriginRange, iterator, Category, T, Distance, Pointer, Reference> {
 
-		typedef TookRange<OriginRange, iterator, Category, T, Distance, Pointer, Reference> CurrentType;
+		typedef std::function<T(T)> Map_t;
+		typedef MappedRange<OriginRange, iterator, Category, T, Distance, Pointer, Reference> CurrentType;
 		typedef RangeModifier<OriginRange, iterator, Category, T, Distance, Pointer, Reference> ParentType;
 
 	public:
-		TookRange(OriginRange range, size_t count)
-			: ParentType(range), count(count) {
-		}
+		MappedRange(OriginRange range, Map_t mapFunc)
+			: ParentType(range), mapFunc(mapFunc) {}
 
 		virtual Distance size() {
-			return count;
+			return this->origin.size();
 		}
 
 		virtual bool empty() {
-			return count == 0 || this->origin.empty();
+			return this->origin.empty();
 		}
 
 		RANGE_MODIFIERS
@@ -39,47 +41,38 @@ namespace rust {
 		template<typename Container>
 		Container collect() {
 			try {
-				size_t originSize = this->origin.size(),
-				       finalSize  = (count > originSize) ? originSize : count;
-				return collectSizeAware<Container>(finalSize);
-			} catch(InfiniteRangeException) {
-				return collectSizeAware<Container>(count);
+				size_t contSize = size();
+				return collectSizeAware<Container>(contSize);
 			} catch(UnknownValueException) {
 				return collectSizeUnaware<Container>();
 			}
 		}
 
-		CurrentType& operator++() {
-			++this->origin;
-			++progress;
-			return *this;
-		}
-
-		CurrentType operator++(int) {
-			CurrentType other = *this;
-			++this->origin;
-			++progress;
-			return other;
-		}
-
 		iterator begin() {
-			if(progress >= count) {
-				return this->origin.end();
-			} else {
-				return this->origin.begin();
-			}
+			return this->origin.begin();
 		}
 
 		T beginValue() {
-			return this->origin.beginValue();
+			return mapFunc(this->origin.beginValue());
 		}
 
 		iterator end() {
 			return this->origin.end();
 		}
 
+		CurrentType& operator++() {
+			++this->origin;
+			return *this;
+		}
+
+		CurrentType& operator++(int) {
+			CurrentType other = *this;
+			++this->origin;
+			return other;
+		}
+
 	private:
-		size_t count, progress = 0;
+		Map_t mapFunc;
 
 		template<typename Container>
 		Container collectSizeAware(size_t size) {
@@ -96,7 +89,7 @@ namespace rust {
 			std::vector<T> temp;
 			auto inserter = std::back_inserter(temp);
 
-			while(progress < count && begin() != end()) {
+			while(begin() != end()) {
 				*inserter++ = beginValue();
 				++(*this);
 			}

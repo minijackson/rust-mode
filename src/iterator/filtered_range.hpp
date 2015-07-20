@@ -2,8 +2,6 @@
 #define RUST_FILTERED_RANGE_HPP
 
 #include "range_modifier.hpp"
-#include "basic_range.hpp"
-
 #include "all_range_modifiers.hpp"
 
 #include <functional>
@@ -51,11 +49,10 @@ namespace rust {
 				auto inserter = std::back_inserter(temp);
 
 				while(begin() != end()) {
-					*inserter++ = *begin();
+					*inserter++ = beginValue();
 					++(*this);
 				}
 
-				
 				// Can't use template specialization in this case but I can do
 				// THIS:
 				if(std::is_same<Container, std::vector<int> >::value) {
@@ -69,7 +66,7 @@ namespace rust {
 		}
 
 		iterator begin() {
-			if(predicate(*ParentType::origin.begin())) {
+			if(predicate(this->origin.beginValue())) {
 				return this->origin.begin();
 			} else {
 				++(*this);
@@ -77,18 +74,22 @@ namespace rust {
 			}
 		}
 
+		T beginValue() {
+			return this->origin.beginValue();
+		}
+
 		iterator end() {
 			return this->origin.end();
 		}
 
 		CurrentType& operator++() {
-			while(ParentType::origin.begin() != ParentType::origin.end() && !predicate(*(++ParentType::origin).begin()));
+			while(this->origin.begin() != this->origin.end() && !predicate((++this->origin).beginValue()));
 			return *this;
 		}
 
 		CurrentType operator++(int) {
 			CurrentType other = *this;
-			while(ParentType::origin.begin() != ParentType::origin.end() && !predicate(*(++ParentType::origin).begin()));
+			while(this->origin.begin() != this->origin.end() && !predicate((++this->origin).beginValue()));
 			return other;
 		}
 

@@ -7,6 +7,7 @@
 #include "filtered_range.hpp"
 #include "cycled_range.hpp"
 #include "took_range.hpp"
+#include "mapped_range.hpp"
 #include "all_range_modifiers.hpp"
 
 #include <iterator>

@@ -33,6 +33,10 @@ namespace rust {
 			return beginIt;
 		}
 
+		T beginValue() {
+			return *beginIt;
+		}
+
 		iterator& end() {
 			if(noEnd) {
 				throw InfiniteRangeException();
