@@ -38,20 +38,15 @@ namespace rust {
 
 		template<typename Container>
 		Container collect() {
-			std::vector<T> temp;
-			auto inserter = std::back_inserter(temp);
-			OriginRange& origin = ParentType::origin;
-
-			unsigned int i = 0;
-			while(i < count && origin.begin() != origin.end()) {
-				*inserter++ = *origin.begin();
-				++i;
-				++origin;
+			try {
+				size_t originSize = this->origin.size(),
+				       finalSize  = (count > originSize) ? originSize : count;
+				return collectSizeAware<Container>(finalSize);
+			} catch(InfiniteRangeException) {
+				return collectSizeAware<Container>(count);
+			} catch(UnknownValueException) {
+				return collectSizeUnaware<Container>();
 			}
-
-			Container cont(temp.size());
-			std::copy(temp.begin(), temp.end(), cont.begin());
-			return cont;
 		}
 
 		CurrentType& operator++() {
@@ -75,8 +70,43 @@ namespace rust {
 			}
 		}
 
+		iterator end() {
+			return this->origin.end();
+		}
+
 	private:
 		size_t count, progress = 0;
+
+		template<typename Container>
+		Container collectSizeAware(size_t size) {
+			Container cont(size);
+			for(T& value: cont) {
+				value = *begin();
+				++(*this);
+			}
+			return cont;
+		}
+
+		template<typename Container>
+		Container collectSizeUnaware() {
+			std::vector<T> temp;
+			auto inserter = std::back_inserter(temp);
+
+			while(progress < count && begin() != end()) {
+				*inserter++ = *begin();
+				++(*this);
+			}
+
+			// Can't use template specialization in this case but I can do
+			// THIS:
+			if(std::is_same<Container, std::vector<int> >::value) {
+				return temp;
+			} else {
+				Container cont(temp.size());
+				std::copy(temp.begin(), temp.end(), cont.begin());
+				return cont;
+			}
+		}
 	};
 
 }
