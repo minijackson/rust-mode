@@ -8,6 +8,7 @@
 #include <list>
 #include <algorithm>
 #include <iterator>
+#include <sstream>
 
 BOOST_AUTO_TEST_CASE(iterator_library_iter_function) {
 	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
@@ -231,4 +232,43 @@ BOOST_AUTO_TEST_CASE(iterator_library_mapped_filtered_iterator) {
 	std::vector<int> expected{4,8,12,16,20};
 	BOOST_CHECK_EQUAL(mappedFiltered.size(), 5);
 	BOOST_CHECK(std::equal(expected.begin(), expected.end(), mappedFiltered.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_inspected_iterator) {
+	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10};
+	auto iterator = rust::iter(vec);
+
+	std::ostringstream os;
+
+	std::vector<int> inspected = iterator
+		.inspect([&os] (int x) {
+			os << x << ",";
+		})
+		.collect<std::vector<int> >();
+
+	std::vector<int> expected{1,2,3,4,5,6,7,8,9,10};
+	BOOST_CHECK_EQUAL(inspected.size(), 10);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), inspected.begin()));
+	BOOST_CHECK_EQUAL(os.str(), "1,2,3,4,5,6,7,8,9,10,");
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_inspected_inspected_iterator) {
+	std::vector<int> vec{1,2,3,4,5};
+	auto iterator = rust::iter(vec);
+
+	std::ostringstream os;
+
+	std::vector<int> inspectedInspected = iterator
+		.inspect([&os] (int x) {
+			os << x << ",";
+		})
+		.inspect([&os] (int x) {
+			os << x << ",";
+		})
+		.collect<std::vector<int> >();
+
+	std::vector<int> expected{1,2,3,4,5};
+	BOOST_CHECK_EQUAL(inspectedInspected.size(), 5);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), inspectedInspected.begin()));
+	BOOST_CHECK_EQUAL(os.str(), "1,1,2,2,3,3,4,4,5,5,");
 }

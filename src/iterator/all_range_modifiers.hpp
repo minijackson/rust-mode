@@ -41,6 +41,16 @@ namespace rust {
 		class Reference
 	> class MappedRange;
 
+	template<
+		class OriginRange,
+		class iterator,
+		class Category,
+		class T,
+		class Distance,
+		class Pointer,
+		class Reference
+	> class InspectedRange;
+
 }
 
 #define RANGE_MODIFIERS \
@@ -59,6 +69,10 @@ namespace rust {
 		MappedRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference> \
 		map(std::function<T(T)> map) { \
 			return MappedRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this, map); \
+		} \
+		InspectedRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference> \
+		inspect(std::function<void(T)> inspectFunc) { \
+			return InspectedRange<CurrentType, iterator, Category, T, Distance, Pointer, Reference>(*this, inspectFunc); \
 		}
 		
 #endif
