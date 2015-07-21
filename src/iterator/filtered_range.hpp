@@ -83,18 +83,23 @@ namespace rust {
 		}
 
 		CurrentType& operator++() {
-			while(this->origin.begin() != this->origin.end() && !predicate((++this->origin).beginValue()));
+			advance();
 			return *this;
 		}
 
 		CurrentType operator++(int) {
 			CurrentType other = *this;
-			while(this->origin.begin() != this->origin.end() && !predicate((++this->origin).beginValue()));
+			advance();
 			return other;
 		}
 
 	private:
 		Filter_t predicate;
+
+		void advance() {
+			while(this->origin.begin() != this->origin.end()
+			  && !predicate((++this->origin).beginValue())  );
+		}
 	};
 
 }

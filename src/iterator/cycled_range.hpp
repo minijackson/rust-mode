@@ -43,19 +43,13 @@ namespace rust {
 		}
 
 		CurrentType& operator++() {
-			++this->origin;
-			if(this->origin.begin() == this->origin.end()) {
-				this->origin = backup;
-			}
+			advance();
 			return *this;
 		}
 
 		CurrentType& operator++(int) {
 			CurrentType other = *this;
-			++this->origin;
-			if(this->origin.begin() == this->origin.end()) {
-				this->origin = backup;
-			}
+			advance();
 			return other;
 		}
 
@@ -65,6 +59,13 @@ namespace rust {
 
 	private:
 		OriginRange backup;
+
+		void advance() {
+			++this->origin;
+			if(this->origin.begin() == this->origin.end()) {
+				this->origin = backup;
+			}
+		}
 	};
 
 }
