@@ -5,6 +5,7 @@
 #include "iterator/took_range.hpp"
 #include "iterator/mapped_range.hpp"
 #include "iterator/inspected_range.hpp"
+#include "iterator/sequence.hpp"
 
 namespace rust {
 	template<class Container> Iterator<typename Container::iterator> iter(Container& cont) {
