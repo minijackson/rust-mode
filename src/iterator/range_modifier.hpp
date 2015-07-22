@@ -10,19 +10,18 @@ namespace rust {
 
 	template<
 		class OriginRange,
-		class iterator,
-		class Category  = typename iterator::iterator_category,
-		class T         = typename iterator::value_type,
+		class T         = typename OriginRange::value_type,
 		class Distance  = std::ptrdiff_t,
 		class Pointer   = T*,
 		class Reference = T&
-	> class RangeModifier : public BasicRange<iterator, Category, T, Distance, Pointer, Reference> {
-	public:
-		typedef BasicRange<iterator, Category, T, Distance, Pointer, Reference> ParentType;
-		typedef RangeModifier<iterator, Category, T, Distance, Pointer, Reference> CurrentType;
+	> class RangeModifier : public BasicRange<typename OriginRange::iterator, T, Distance, Pointer, Reference> {
 
-		static_assert(std::is_base_of<ParentType, OriginRange>::value,
-				"The range must inherit BaseRange");
+		typedef BasicRange<typename OriginRange::iterator, T, Distance, Pointer, Reference> ParentType;
+		typedef RangeModifier<OriginRange, T, Distance, Pointer, Reference> CurrentType;
+
+	public:
+		typedef typename OriginRange::iterator iterator;
+		typedef T                              value_type;
 
 		RangeModifier(OriginRange origin)
 			: ParentType(origin.begin(), origin.end()), origin(origin) {}

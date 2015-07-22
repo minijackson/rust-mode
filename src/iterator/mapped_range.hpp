@@ -12,19 +12,18 @@ namespace rust {
 
 	template<
 		class OriginRange,
-		class iterator,
-		class Category  = typename iterator::iterator_category,
-		class T         = typename iterator::value_type,
+		class T         = typename OriginRange::value_type,
 		class Distance  = std::ptrdiff_t,
 		class Pointer   = T*,
 		class Reference = T&
-	> class MappedRange : public RangeModifier<OriginRange, iterator, Category, T, Distance, Pointer, Reference> {
+	> class MappedRange : public RangeModifier<OriginRange, T, Distance, Pointer, Reference> {
 
 		typedef std::function<T(T)> Map_t;
-		typedef MappedRange<OriginRange, iterator, Category, T, Distance, Pointer, Reference> CurrentType;
-		typedef RangeModifier<OriginRange, iterator, Category, T, Distance, Pointer, Reference> ParentType;
+		typedef MappedRange<OriginRange, T, Distance, Pointer, Reference> CurrentType;
+		typedef RangeModifier<OriginRange, T, Distance, Pointer, Reference> ParentType;
 
 	public:
+
 		MappedRange(OriginRange range, Map_t mapFunc)
 			: ParentType(range), mapFunc(mapFunc) {}
 
@@ -48,7 +47,7 @@ namespace rust {
 			}
 		}
 
-		iterator& begin() {
+		typename ParentType::iterator& begin() {
 			return this->origin.begin();
 		}
 
@@ -56,7 +55,7 @@ namespace rust {
 			return mapFunc(this->origin.beginValue());
 		}
 
-		iterator& end() {
+		typename ParentType::iterator& end() {
 			return this->origin.end();
 		}
 

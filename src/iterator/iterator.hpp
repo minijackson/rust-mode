@@ -14,16 +14,18 @@
 namespace rust {
 
 	template<
-		class iterator,
-		class Category  = typename iterator::iterator_category,
-		class T         = typename iterator::value_type,
+		class myIterator,
+		class T         = typename myIterator::value_type,
 		class Distance  = std::ptrdiff_t,
 		class Pointer   = T*,
 		class Reference = T&
-	> class Iterator : public BasicRange<iterator, Category, T, Distance, Pointer, Reference> {
+	> class Iterator : public BasicRange<myIterator, T, Distance, Pointer, Reference> {
+		typedef Iterator<myIterator, T, Distance, Pointer, Reference> CurrentType;
+		typedef BasicRange<myIterator, T, Distance, Pointer, Reference> ParentType;
+
 	public:
-		typedef Iterator<iterator, Category, T, Distance, Pointer, Reference> CurrentType;
-		typedef BasicRange<iterator, Category, T, Distance, Pointer, Reference> ParentType;
+		typedef myIterator iterator;
+		typedef T          value_type;
 
 		Iterator(iterator beginIt, iterator endIt) : ParentType(beginIt, endIt) {}
 		explicit Iterator(iterator beginIt) : ParentType(beginIt) {}

@@ -1,33 +1,49 @@
-#ifndef RUST_INSPECTED_RANGE_HPP
-#define RUST_INSPECTED_RANGE_HPP
+#ifndef RUST_ZIPPED_RANGE_HPP
+#define RUST_ZIPPED_RANGE_HPP
 
 #include "range_modifier.hpp"
 #include "all_range_modifiers.hpp"
+
+#include <utility>
 
 namespace rust {
 
 	template<
 		class OriginRange,
-		class T         = typename OriginRange::value_type,
+		class OtherRange,
+		class T         = std::pair<typename OriginRange::value_type, typename OtherRange::value_type>,
 		class Distance  = std::ptrdiff_t,
 		class Pointer   = T*,
 		class Reference = T&
-	> class InspectedRange : public RangeModifier<OriginRange, T, Distance, Pointer, Reference> {
+	> class ZippedRange : public RangeModifier<OriginRange, typename OriginRange::value_type, Distance, Pointer, Reference> {
 
-		typedef std::function<void(T)> InspectFunc_t;
-		typedef InspectedRange<OriginRange, T, Distance, Pointer, Reference> CurrentType;
-		typedef RangeModifier<OriginRange, T, Distance, Pointer, Reference> ParentType;
+		typedef ZippedRange<OriginRange, OtherRange, T, Distance, Pointer, Reference> CurrentType;
+		typedef RangeModifier<OriginRange, typename OriginRange::value_type, Distance, Pointer, Reference> ParentType;
 
 	public:
-		InspectedRange(OriginRange range, InspectFunc_t inspectFunc)
-			: ParentType(range), inspectFunc(inspectFunc) {}
+
+		ZippedRange(OriginRange range, OtherRange other)
+			: ParentType(range), other(other) {}
 
 		virtual Distance size() {
-			return this->origin.size();
+			try {
+				Distance otherSize  = other.size();
+
+				try {
+					Distance originSize = this->origin.size();
+					return (otherSize < originSize) ? otherSize : originSize;
+				} catch(InfiniteRangeException) {
+					return otherSize;
+				}
+
+			} catch(InfiniteRangeException) {
+				// Don't catch InfiniteRangeException here because we want it passed down
+				return this->origin.size();
+			}
 		}
 
 		virtual bool empty() {
-			return this->origin.empty();
+			return other.empty() || this->origin.empty();
 		}
 
 		RANGE_MODIFIERS
@@ -43,13 +59,15 @@ namespace rust {
 		}
 
 		typename ParentType::iterator& begin() {
-			return this->origin.begin();
+			if(other.begin() != other.end()) {
+				return this->origin.begin();
+			} else {
+				return this->origin.end();
+			}
 		}
 
 		T beginValue() {
-			T value = this->origin.beginValue();
-			inspectFunc(value);
-			return value;
+			return std::make_pair(this->origin.beginValue(), other.beginValue());
 		}
 
 		typename ParentType::iterator& end() {
@@ -58,17 +76,19 @@ namespace rust {
 
 		CurrentType& operator++() {
 			++this->origin;
+			++other;
 			return *this;
 		}
 
-		CurrentType& operator++(int) {
-			CurrentType other = *this;
+		CurrentType operator++(int) {
+			CurrentType thisBefore = *this;
 			++this->origin;
-			return other;
+			++other;
+			return thisBefore;
 		}
 
 	private:
-		InspectFunc_t inspectFunc;
+		OtherRange other;
 
 		template<typename Container>
 		Container collectSizeAware(size_t size) {
@@ -101,6 +121,7 @@ namespace rust {
 			}
 		}
 	};
+
 }
 
 #endif

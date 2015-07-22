@@ -271,3 +271,36 @@ BOOST_AUTO_TEST_CASE(iterator_library_inspected_inspected_iterator) {
 	BOOST_CHECK(std::equal(expected.begin(), expected.end(), inspectedInspected.begin()));
 	BOOST_CHECK_EQUAL(os.str(), "1,1,2,2,3,3,4,4,5,5,");
 }
+
+BOOST_AUTO_TEST_CASE(iterator_library_zipped_iterator) {
+	std::vector<int> vec{1,2,3,4,5,6,7,8};
+	std::vector<char> vec2{'a','b','c','d','e'};
+	auto iterator  = rust::iter(vec);
+	auto iterator2 = rust::iter(vec2);
+
+	std::vector<std::pair<int, char> > zipped = iterator
+		.zip(iterator2)
+		.collect<std::vector<std::pair<int, char> > >();
+
+	std::vector<std::pair<int, char> > expected{{1,'a'},{2,'b'},{3,'c'},{4,'d'},{5,'e'}};
+	BOOST_CHECK_EQUAL(zipped.size(), 5);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), zipped.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_filitered_zipped_iterator) {
+	std::vector<int> vec{1,2,3,4,5,6,7,8};
+	std::vector<char> vec2{'a','b','c','d','e'};
+	auto iterator  = rust::iter(vec);
+	auto iterator2 = rust::iter(vec2);
+
+	std::vector<std::pair<int, char> > filteredZipped = iterator
+		.zip(iterator2)
+		.filter([] (std::pair<int, char> x) {
+			return x != std::make_pair(3,'c');
+		})
+		.collect<std::vector<std::pair<int, char> > >();
+
+	std::vector<std::pair<int, char> > expected{{1,'a'},{2,'b'},{4,'d'},{5,'e'}};
+	BOOST_CHECK_EQUAL(filteredZipped.size(), 4);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filteredZipped.begin()));
+}

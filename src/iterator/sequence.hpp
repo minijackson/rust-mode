@@ -7,14 +7,8 @@
 
 namespace rust {
 
-	class SequenceIterator {
+	class SequenceIterator : public std::iterator<std::random_access_iterator_tag, int> {
 	public:
-		typedef std::ptrdiff_t                  difference_type;
-		typedef int                             value_type;
-		typedef int*                            pointer;
-		typedef const int&                      reference;
-		typedef std::random_access_iterator_tag iterator_category;
-
 		SequenceIterator();
 		SequenceIterator(int value);
 

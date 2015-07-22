@@ -10,16 +10,14 @@ namespace rust {
 
 	template<
 		class OriginRange,
-		class iterator,
-		class Category  = typename iterator::iterator_category,
-		class T         = typename iterator::value_type,
+		class T         = typename OriginRange::value_type,
 		class Distance  = std::ptrdiff_t,
 		class Pointer   = T*,
 		class Reference = T&
-	> class TookRange : public RangeModifier<OriginRange, iterator, Category, T, Distance, Pointer, Reference> {
+	> class TookRange : public RangeModifier<OriginRange, T, Distance, Pointer, Reference> {
 
-		typedef TookRange<OriginRange, iterator, Category, T, Distance, Pointer, Reference> CurrentType;
-		typedef RangeModifier<OriginRange, iterator, Category, T, Distance, Pointer, Reference> ParentType;
+		typedef TookRange<OriginRange, T, Distance, Pointer, Reference> CurrentType;
+		typedef RangeModifier<OriginRange, T, Distance, Pointer, Reference> ParentType;
 
 	public:
 		TookRange(OriginRange range, size_t count)
@@ -62,7 +60,7 @@ namespace rust {
 			return other;
 		}
 
-		iterator& begin() {
+		typename ParentType::iterator& begin() {
 			if(progress >= count) {
 				return this->origin.end();
 			} else {
@@ -74,7 +72,7 @@ namespace rust {
 			return this->origin.beginValue();
 		}
 
-		iterator& end() {
+		typename ParentType::iterator& end() {
 			return this->origin.end();
 		}
 

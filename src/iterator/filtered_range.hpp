@@ -13,17 +13,15 @@ namespace rust {
 
 	template<
 		class OriginRange,
-		class iterator,
-		class Category  = typename iterator::iterator_category,
-		class T         = typename iterator::value_type,
+		class T         = typename OriginRange::value_type,
 		class Distance  = std::ptrdiff_t,
 		class Pointer   = T*,
 		class Reference = T&
-	> class FilteredRange : public RangeModifier<OriginRange, iterator, Category, T, Distance, Pointer, Reference> {
+	> class FilteredRange : public RangeModifier<OriginRange, T, Distance, Pointer, Reference> {
 
 		typedef std::function<bool(T)> Filter_t;
-		typedef FilteredRange<OriginRange, iterator, Category, T, Distance, Pointer, Reference> CurrentType;
-		typedef RangeModifier<OriginRange, iterator, Category, T, Distance, Pointer, Reference> ParentType;
+		typedef FilteredRange<OriginRange, T, Distance, Pointer, Reference> CurrentType;
+		typedef RangeModifier<OriginRange, T, Distance, Pointer, Reference> ParentType;
 
 	public:
 		FilteredRange(OriginRange range, Filter_t predicate)
@@ -65,7 +63,7 @@ namespace rust {
 			}
 		}
 
-		iterator& begin() {
+		typename ParentType::iterator& begin() {
 			if(predicate(this->origin.beginValue())) {
 				return this->origin.begin();
 			} else {
@@ -78,7 +76,7 @@ namespace rust {
 			return this->origin.beginValue();
 		}
 
-		iterator& end() {
+		typename ParentType::iterator& end() {
 			return this->origin.end();
 		}
 

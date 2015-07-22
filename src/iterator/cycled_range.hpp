@@ -10,16 +10,14 @@ namespace rust {
 
 	template<
 		class OriginRange,
-		class iterator,
-		class Category  = typename iterator::iterator_category,
-		class T         = typename iterator::value_type,
+		class T         = typename OriginRange::value_type,
 		class Distance  = std::ptrdiff_t,
 		class Pointer   = T*,
 		class Reference = T&
-	> class CycledRange : public RangeModifier<OriginRange, iterator, Category, T, Distance, Pointer, Reference> {
+	> class CycledRange : public RangeModifier<OriginRange, T, Distance, Pointer, Reference> {
 
-		typedef CycledRange<OriginRange, iterator, Category, T, Distance, Pointer, Reference> CurrentType;
-		typedef RangeModifier<OriginRange, iterator, Category, T, Distance, Pointer, Reference> ParentType;
+		typedef CycledRange<OriginRange, T, Distance, Pointer, Reference> CurrentType;
+		typedef RangeModifier<OriginRange, T, Distance, Pointer, Reference> ParentType;
 
 	public:
 		CycledRange(OriginRange range)
