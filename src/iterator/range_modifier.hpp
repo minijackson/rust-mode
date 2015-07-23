@@ -19,18 +19,14 @@ namespace rust {
 		typedef typename OriginRange::value_type      value_type;
 		typedef typename OriginRange::difference_type difference_type;
 
-		RangeModifier(OriginRange origin)
-			: ParentType(origin.begin(), origin.end()), origin(origin) {}
+		RangeModifier(OriginRange origin, bool hasEnd)
+			: ParentType(hasEnd), origin(origin) {}
 
 		virtual difference_type size()  = 0;
 		virtual bool            empty() = 0;
 
-		iterator& begin() {
-			return origin.begin();
-		}
-
-		iterator& end() {
-			return origin.end();
+		virtual bool hasEnded() {
+			return origin.hasEnded();
 		}
 
 	protected:

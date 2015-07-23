@@ -2,8 +2,6 @@
 #define RUST_CYCLED_RANGE_HPP
 
 #include "range_modifier.hpp"
-#include "basic_range.hpp"
-
 #include "all_range_modifiers.hpp"
 
 namespace rust {
@@ -16,7 +14,7 @@ namespace rust {
 
 	public:
 		CycledRange(OriginRange range)
-			: ParentType(range), backup(range) {
+			: ParentType(range, false), backup(range) {
 			this->noEnd = true;
 		}
 
@@ -46,8 +44,8 @@ namespace rust {
 			return other;
 		}
 
-		typename CurrentType::value_type beginValue() {
-			return this->origin.beginValue();
+		typename CurrentType::value_type currentValue() {
+			return this->origin.currentValue();
 		}
 
 	private:
@@ -55,7 +53,7 @@ namespace rust {
 
 		void advance() {
 			++this->origin;
-			if(this->origin.begin() == this->origin.end()) {
+			if(this->origin.hasEnded()) {
 				this->origin = backup;
 			}
 		}

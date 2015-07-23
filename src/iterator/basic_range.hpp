@@ -28,20 +28,10 @@ namespace rust {
 		explicit BasicRange(iterator beginIt)
 			: beginIt(beginIt), noEnd(true) {}
 
-		iterator& begin() {
-			return beginIt;
-		}
+		BasicRange(bool hasEnd) : noEnd(!hasEnd) {}
 
-		T beginValue() {
+		T currentValue() {
 			return *beginIt;
-		}
-
-		iterator& end() {
-			if(noEnd) {
-				throw InfiniteRangeException();
-			} else {
-				return endIt;
-			}
 		}
 
 		virtual Distance size() {
@@ -52,12 +42,20 @@ namespace rust {
 			}
 		}
 
-		bool empty() {
+		virtual bool empty() {
 			return beginIt == endIt;
 		}
 
-		bool hasEnd() {
+		virtual bool hasEnd() {
 			return !noEnd;
+		}
+
+		virtual bool hasEnded() {
+			if(noEnd) {
+				return false;
+			} else {
+				return beginIt == endIt;
+			}
 		}
 
 		template<typename Container>

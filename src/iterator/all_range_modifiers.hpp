@@ -21,6 +21,9 @@ namespace rust {
 	template<class OriginRange, class OtherRange>
 	class ZippedRange;
 
+	template<class OriginRange, class OtherRange>
+	class ChainedRange;
+
 }
 
 #define RANGE_MODIFIERS \
@@ -48,6 +51,11 @@ namespace rust {
 		ZippedRange<CurrentType, MyOtherRange> \
 		zip(MyOtherRange range) { \
 			return ZippedRange<CurrentType, MyOtherRange>(*this, range); \
+		} \
+		template<typename MyOtherRange> \
+		ChainedRange<CurrentType, MyOtherRange> \
+		chain(MyOtherRange range) { \
+			return ChainedRange<CurrentType, MyOtherRange>(*this, range); \
 		}
 		
 #endif

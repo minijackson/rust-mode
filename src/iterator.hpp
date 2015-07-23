@@ -1,5 +1,6 @@
 #include "iterator/iterator.hpp"
 
+#include "iterator/chained_range.hpp"
 #include "iterator/cycled_range.hpp"
 #include "iterator/filtered_range.hpp"
 #include "iterator/inspected_range.hpp"

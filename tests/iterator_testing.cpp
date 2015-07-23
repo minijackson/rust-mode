@@ -22,8 +22,11 @@ BOOST_AUTO_TEST_CASE(iterator_library_sequence) {
 BOOST_AUTO_TEST_CASE(iterator_library_iter_function) {
 	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
 
-	rust::Iterator<std::vector<int>::iterator> rt(vec.begin(), vec.end());
-	auto lt = rust::iter(vec);
+	rust::Iterator<std::vector<int>::iterator> rtIt(vec.begin(), vec.end());
+	auto ltIt = rust::iter(vec);
+
+	std::vector<int> rt = rtIt.collect<std::vector<int> >(),
+	                 lt = ltIt.collect<std::vector<int> >();
 
 	BOOST_CHECK_EQUAL(std::distance(rt.begin(), rt.end()), std::distance(lt.begin(), lt.end()));
 	BOOST_CHECK(std::equal(rt.begin(), rt.end(), lt.begin()));
@@ -32,9 +35,10 @@ BOOST_AUTO_TEST_CASE(iterator_library_iter_function) {
 BOOST_AUTO_TEST_CASE(iterator_library_vector_to_rust_iterator) {
 	std::vector<int> vec{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
 	auto iterator = rust::iter(vec);
+	std::vector<int> result = iterator.collect<std::vector<int> >();
 
-	BOOST_CHECK_EQUAL(std::distance(vec.begin(), vec.end()), std::distance(iterator.begin(), iterator.end()));
-	BOOST_CHECK(std::equal(vec.begin(), vec.end(), iterator.begin()));
+	BOOST_CHECK_EQUAL(std::distance(vec.begin(), vec.end()), std::distance(result.begin(), result.end()));
+	BOOST_CHECK(std::equal(vec.begin(), vec.end(), result.begin()));
 }
 
 BOOST_AUTO_TEST_CASE(iterator_library_infinite_size_failure) {
@@ -44,21 +48,23 @@ BOOST_AUTO_TEST_CASE(iterator_library_infinite_size_failure) {
 }
 
 BOOST_AUTO_TEST_CASE(iterator_library_basic_take) {
-	auto newIt = rust::Sequence(1,31).take(5);
+	auto iterator = rust::Sequence(1,31).take(5);
+	std::vector<int> result = iterator.collect<std::vector<int> >();
 
 	std::vector<int> expected{1,2,3,4,5};
 
-	BOOST_CHECK_EQUAL(newIt.size(), 5);
-	BOOST_CHECK(std::equal(expected.begin(), expected.end(), newIt.begin()));
+	BOOST_CHECK_EQUAL(result.size(), 5);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), result.begin()));
 }
 
 BOOST_AUTO_TEST_CASE(iterator_library_chained_take) {
-	auto newIt = rust::Sequence(1,31).take(10).take(5);
+	auto iterator = rust::Sequence(1,31).take(10).take(5);
+	std::vector<int> result = iterator.collect<std::vector<int> >();
 
 	std::vector<int> expected{1,2,3,4,5};
 
-	BOOST_CHECK_EQUAL(newIt.size(), 5);
-	BOOST_CHECK(std::equal(expected.begin(), expected.end(), newIt.begin()));
+	BOOST_CHECK_EQUAL(result.size(), 5);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), result.begin()));
 }
 
 BOOST_AUTO_TEST_CASE(iterator_library_rust_iterator_to_list) {
@@ -100,7 +106,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_chained_filter) {
 }
 
 BOOST_AUTO_TEST_CASE(iterator_library_collected_took_chained_filter) {
-	auto iterator = rust::Sequence(1,31);
+	auto iterator = rust::Sequence(1);
 
 	std::vector<int> filtered = iterator
 		.filter([] (int x) {
@@ -114,6 +120,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_took_chained_filter) {
 
 	std::vector<int> expected{6,12,18};
 
+	BOOST_CHECK_EQUAL(filtered.size(), 3);
 	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filtered.begin()));
 }
 
@@ -303,4 +310,37 @@ BOOST_AUTO_TEST_CASE(iterator_library_filitered_zipped_iterator) {
 	std::vector<std::pair<int, char> > expected{{1,'a'},{2,'b'},{4,'d'},{5,'e'}};
 	BOOST_CHECK_EQUAL(filteredZipped.size(), 4);
 	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filteredZipped.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_chained_iterator) {
+	auto iterator   = rust::Sequence(1,5),
+	     iterator2  = rust::Sequence(5,10),
+		 expectedIt = rust::Sequence(1,10);
+
+	std::vector<int> chained = iterator
+		.chain(iterator2)
+		.collect<std::vector<int> >();
+
+	std::vector<int> expected = expectedIt.collect<std::vector<int> >();
+
+	BOOST_CHECK_EQUAL(chained.size(), 9);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), chained.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_mapped_chained_iterator) {
+	auto iterator   = rust::Sequence(1,5),
+	     iterator2  = rust::Sequence(5,10),
+		 expectedIt = rust::Sequence(11,20);
+
+	std::vector<int> mappedChained = iterator
+		.chain(iterator2)
+		.map([] (int x) {
+			return x + 10;
+		})
+		.collect<std::vector<int> >();
+
+	std::vector<int> expected = expectedIt.collect<std::vector<int> >();
+
+	BOOST_CHECK_EQUAL(mappedChained.size(), 9);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), mappedChained.begin()));
 }

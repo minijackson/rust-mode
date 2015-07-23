@@ -20,7 +20,7 @@ namespace rust {
 
 	public:
 		FilteredRange(OriginRange range, Filter_t predicate)
-			: ParentType(range), predicate(predicate) {
+			: ParentType(range, range.hasEnd()), predicate(predicate) {
 		}
 
 		virtual typename CurrentType::difference_type size() {
@@ -41,8 +41,8 @@ namespace rust {
 				std::vector<typename CurrentType::value_type> temp;
 				auto inserter = std::back_inserter(temp);
 
-				while(begin() != end()) {
-					*inserter++ = beginValue();
+				while(!this->hasEnded()) {
+					*inserter++ = currentValue();
 					++(*this);
 				}
 
@@ -58,17 +58,11 @@ namespace rust {
 			}
 		}
 
-		typename ParentType::iterator& begin() {
-			if(predicate(this->origin.beginValue())) {
-				return this->origin.begin();
-			} else {
+		typename CurrentType::value_type currentValue() {
+			if(!predicate(this->origin.currentValue())) {
 				++(*this);
-				return this->origin.begin();
 			}
-		}
-
-		typename CurrentType::value_type beginValue() {
-			return this->origin.beginValue();
+			return this->origin.currentValue();
 		}
 
 		typename ParentType::iterator& end() {
@@ -90,8 +84,8 @@ namespace rust {
 		Filter_t predicate;
 
 		void advance() {
-			while(this->origin.begin() != this->origin.end()
-			  && !predicate((++this->origin).beginValue())  );
+			while(!this->origin.hasEnded()
+			  && !predicate((++this->origin).currentValue())  );
 		}
 	};
 

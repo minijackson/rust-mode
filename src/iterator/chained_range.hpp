@@ -1,28 +1,34 @@
-#ifndef RUST_INSPECTED_RANGE_HPP
-#define RUST_INSPECTED_RANGE_HPP
+#ifndef RUST_CHAINED_RANGE_HPP
+#define RUST_CHAINED_RANGE_HPP
 
 #include "range_modifier.hpp"
 #include "all_range_modifiers.hpp"
 
+#include <type_traits>
+#include <vector>
+
 namespace rust {
 
-	template<class OriginRange>
-	class InspectedRange : public RangeModifier<OriginRange> {
+	template<class OriginRange, class OtherRange>
+	class ChainedRange : public RangeModifier<OriginRange> {
 
-		typedef std::function<void(typename OriginRange::value_type)> InspectFunc_t;
-		typedef InspectedRange<OriginRange> CurrentType;
-		typedef RangeModifier<OriginRange>  ParentType;
+		typedef ChainedRange<OriginRange, OtherRange>  CurrentType;
+		typedef RangeModifier<OriginRange>             ParentType;
 
 	public:
-		InspectedRange(OriginRange range, InspectFunc_t inspectFunc)
-			: ParentType(range, range.hasEnd()), inspectFunc(inspectFunc) {}
+		ChainedRange(OriginRange range, OtherRange other)
+			: ParentType(range, range.hasEnd() && other.hasEnd()), other(other) {}
 
 		virtual typename CurrentType::difference_type size() {
-			return this->origin.size();
+			return this->origin.size() + other.size();
 		}
 
 		virtual bool empty() {
-			return this->origin.empty();
+			return this->origin.empty() && other.empty();
+		}
+
+		virtual bool hasEnded() {
+			return other.hasEnded();
 		}
 
 		RANGE_MODIFIERS
@@ -37,25 +43,39 @@ namespace rust {
 			}
 		}
 
-		typename CurrentType::value_type currentValue() {
-			typename CurrentType::value_type value = this->origin.currentValue();
-			inspectFunc(value);
-			return value;
-		}
-
 		CurrentType& operator++() {
-			++this->origin;
+			advance();
 			return *this;
 		}
 
-		CurrentType& operator++(int) {
-			CurrentType other = *this;
-			++this->origin;
+		CurrentType operator++(int) {
+			CurrentType other;
+			advance();
 			return other;
 		}
 
+		typename CurrentType::value_type currentValue() {
+			if(isIteratingOther) {
+				return other.currentValue();
+			} else {
+				return this->origin.currentValue();
+			}
+		}
+
 	private:
-		InspectFunc_t inspectFunc;
+		OtherRange other;
+		bool isIteratingOther = false;
+
+		void advance() {
+			if(isIteratingOther) {
+				++other;
+			} else {
+				++this->origin;
+				if(this->origin.hasEnded()) {
+					isIteratingOther = true;
+				}
+			}
+		}
 
 		template<typename Container>
 		Container collectSizeAware(size_t size) {
@@ -72,7 +92,7 @@ namespace rust {
 			std::vector<typename CurrentType::value_type> temp;
 			auto inserter = std::back_inserter(temp);
 
-			while(this->hasEnded()) {
+			while(hasEnded()) {
 				*inserter++ = currentValue();
 				++(*this);
 			}

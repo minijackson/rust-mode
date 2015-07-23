@@ -20,7 +20,7 @@ namespace rust {
 	public:
 
 		MappedRange(OriginRange range, Map_t mapFunc)
-			: ParentType(range), mapFunc(mapFunc) {}
+			: ParentType(range, range.hasEnd()), mapFunc(mapFunc) {}
 
 		virtual typename CurrentType::difference_type size() {
 			return this->origin.size();
@@ -42,16 +42,8 @@ namespace rust {
 			}
 		}
 
-		typename ParentType::iterator& begin() {
-			return this->origin.begin();
-		}
-
-		typename CurrentType::value_type beginValue() {
-			return mapFunc(this->origin.beginValue());
-		}
-
-		typename ParentType::iterator& end() {
-			return this->origin.end();
+		typename CurrentType::value_type currentValue() {
+			return mapFunc(this->origin.currentValue());
 		}
 
 		CurrentType& operator++() {
@@ -72,7 +64,7 @@ namespace rust {
 		Container collectSizeAware(size_t size) {
 			Container cont(size);
 			for(typename CurrentType::value_type& value: cont) {
-				value = beginValue();
+				value = currentValue();
 				++(*this);
 			}
 			return cont;
@@ -83,8 +75,8 @@ namespace rust {
 			std::vector<typename CurrentType::value_type> temp;
 			auto inserter = std::back_inserter(temp);
 
-			while(begin() != end()) {
-				*inserter++ = beginValue();
+			while(!this->hasEnded()) {
+				*inserter++ = currentValue();
 				++(*this);
 			}
 

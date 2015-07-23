@@ -5,6 +5,7 @@
 #include "all_range_modifiers.hpp"
 
 #include <utility>
+#include <vector>
 
 namespace rust {
 
@@ -20,7 +21,7 @@ namespace rust {
 		                  typename OtherRange ::value_type> value_type;
 
 		ZippedRange(OriginRange range, OtherRange other)
-			: ParentType(range), other(other) {}
+			: ParentType(range, range.hasEnd() || other.hasEnd()), other(other) {}
 
 		virtual typename CurrentType::difference_type size() {
 			try {
@@ -43,6 +44,10 @@ namespace rust {
 			return other.empty() || this->origin.empty();
 		}
 
+		virtual bool hasEnded() {
+			return this->origin.hasEnded() || other.hasEnded();
+		}
+
 		RANGE_MODIFIERS
 
 		template<typename Container>
@@ -55,16 +60,8 @@ namespace rust {
 			}
 		}
 
-		typename ParentType::iterator& begin() {
-			if(other.begin() != other.end()) {
-				return this->origin.begin();
-			} else {
-				return this->origin.end();
-			}
-		}
-
-		typename CurrentType::value_type beginValue() {
-			return std::make_pair(this->origin.beginValue(), other.beginValue());
+		typename CurrentType::value_type currentValue() {
+			return std::make_pair(this->origin.currentValue(), other.currentValue());
 		}
 
 		typename ParentType::iterator& end() {
@@ -91,7 +88,7 @@ namespace rust {
 		Container collectSizeAware(size_t size) {
 			Container cont(size);
 			for(typename CurrentType::value_type& value: cont) {
-				value = beginValue();
+				value = currentValue();
 				++(*this);
 			}
 			return cont;
@@ -102,8 +99,8 @@ namespace rust {
 			std::vector<typename CurrentType::value_type> temp;
 			auto inserter = std::back_inserter(temp);
 
-			while(begin() != end()) {
-				*inserter++ = beginValue();
+			while(hasEnded()) {
+				*inserter++ = currentValue();
 				++(*this);
 			}
 

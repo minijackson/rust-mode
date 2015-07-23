@@ -16,7 +16,7 @@ namespace rust {
 
 	public:
 		TookRange(OriginRange range, size_t count)
-			: ParentType(range), count(count) {
+			: ParentType(range, true), count(count) {
 		}
 
 		virtual typename CurrentType::difference_type size() {
@@ -25,6 +25,10 @@ namespace rust {
 
 		virtual bool empty() {
 			return count == 0 || this->origin.empty();
+		}
+
+		virtual bool hasEnded() {
+			return progress >= count || this->origin.hasEnded();
 		}
 
 		RANGE_MODIFIERS
@@ -55,20 +59,8 @@ namespace rust {
 			return other;
 		}
 
-		typename ParentType::iterator& begin() {
-			if(progress >= count) {
-				return this->origin.end();
-			} else {
-				return this->origin.begin();
-			}
-		}
-
-		typename CurrentType::value_type beginValue() {
-			return this->origin.beginValue();
-		}
-
-		typename ParentType::iterator& end() {
-			return this->origin.end();
+		typename CurrentType::value_type currentValue() {
+			return this->origin.currentValue();
 		}
 
 	private:
@@ -77,8 +69,8 @@ namespace rust {
 		template<typename Container>
 		Container collectSizeAware(size_t size) {
 			Container cont(size);
-			for(typename CurrentType::value_type& value: cont) {
-				value = beginValue();
+			for(typename CurrentType::value_type& value : cont) {
+				value = currentValue();
 				++(*this);
 			}
 			return cont;
@@ -89,8 +81,8 @@ namespace rust {
 			std::vector<typename CurrentType::value_type> temp;
 			auto inserter = std::back_inserter(temp);
 
-			while(progress < count && begin() != end()) {
-				*inserter++ = beginValue();
+			while(!hasEnded()) {
+				*inserter++ = currentValue();
 				++(*this);
 			}
 
