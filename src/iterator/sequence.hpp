@@ -41,7 +41,8 @@ namespace rust {
 	};
 
 	class Sequence : public Iterator<SequenceIterator> {
-		typedef Sequence CurrentType;
+		typedef Sequence                   CurrentType;
+		typedef Iterator<SequenceIterator> ParentType;
 	public:
 		Sequence();
 		Sequence(int begin);

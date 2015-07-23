@@ -8,29 +8,26 @@
 
 namespace rust {
 
-	template<
-		class OriginRange,
-		class OtherRange,
-		class T         = std::pair<typename OriginRange::value_type, typename OtherRange::value_type>,
-		class Distance  = std::ptrdiff_t,
-		class Pointer   = T*,
-		class Reference = T&
-	> class ZippedRange : public RangeModifier<OriginRange, typename OriginRange::value_type, Distance, Pointer, Reference> {
+	template<class OriginRange, class OtherRange>
+	class ZippedRange : public RangeModifier<OriginRange> {
 
-		typedef ZippedRange<OriginRange, OtherRange, T, Distance, Pointer, Reference> CurrentType;
-		typedef RangeModifier<OriginRange, typename OriginRange::value_type, Distance, Pointer, Reference> ParentType;
+		typedef ZippedRange<OriginRange, OtherRange> CurrentType;
+		typedef RangeModifier<OriginRange>           ParentType;
 
 	public:
+
+		typedef std::pair<typename OriginRange::value_type,
+		                  typename OtherRange ::value_type> value_type;
 
 		ZippedRange(OriginRange range, OtherRange other)
 			: ParentType(range), other(other) {}
 
-		virtual Distance size() {
+		virtual typename CurrentType::difference_type size() {
 			try {
-				Distance otherSize  = other.size();
+				typename CurrentType::difference_type otherSize  = other.size();
 
 				try {
-					Distance originSize = this->origin.size();
+					typename CurrentType::difference_type originSize = this->origin.size();
 					return (otherSize < originSize) ? otherSize : originSize;
 				} catch(InfiniteRangeException) {
 					return otherSize;
@@ -66,7 +63,7 @@ namespace rust {
 			}
 		}
 
-		T beginValue() {
+		typename CurrentType::value_type beginValue() {
 			return std::make_pair(this->origin.beginValue(), other.beginValue());
 		}
 
@@ -93,7 +90,7 @@ namespace rust {
 		template<typename Container>
 		Container collectSizeAware(size_t size) {
 			Container cont(size);
-			for(T& value: cont) {
+			for(typename CurrentType::value_type& value: cont) {
 				value = beginValue();
 				++(*this);
 			}
@@ -102,7 +99,7 @@ namespace rust {
 
 		template<typename Container>
 		Container collectSizeUnaware() {
-			std::vector<T> temp;
+			std::vector<typename CurrentType::value_type> temp;
 			auto inserter = std::back_inserter(temp);
 
 			while(begin() != end()) {

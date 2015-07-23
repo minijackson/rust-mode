@@ -3,82 +3,51 @@
 #include <utility>
 
 namespace rust {
-	template<
-		class OriginRange,
-		class T,
-		class Distance,
-		class Pointer,
-		class Reference
-	> class FilteredRange;
+	template<class OriginRange>
+		class FilteredRange;
 
-	template<
-		class OriginRange,
-		class T,
-		class Distance,
-		class Pointer,
-		class Reference
-	> class CycledRange;
+	template<class OriginRange>
+	class CycledRange;
 
-	template<
-		class OriginRange,
-		class T,
-		class Distance,
-		class Pointer,
-		class Reference
-	> class TookRange;
+	template<class OriginRange>
+	class TookRange;
 
-	template<
-		class OriginRange,
-		class T,
-		class Distance,
-		class Pointer,
-		class Reference
-	> class MappedRange;
+	template<class OriginRange>
+	class MappedRange;
 
-	template<
-		class OriginRange,
-		class T,
-		class Distance,
-		class Pointer,
-		class Reference
-	> class InspectedRange;
+	template<class OriginRange>
+	class InspectedRange;
 
-	template<
-		class OriginRange,
-		class OtherRange,
-		class T,
-		class Distance,
-		class Pointer,
-		class Reference
-	> class ZippedRange;
+	template<class OriginRange, class OtherRange>
+	class ZippedRange;
 
 }
 
 #define RANGE_MODIFIERS \
-		FilteredRange<CurrentType, T, Distance, Pointer, Reference> \
-		filter(std::function<bool(T)> predicate) { \
-			return FilteredRange<CurrentType, T, Distance, Pointer, Reference>(*this, predicate); \
+		FilteredRange<CurrentType> \
+		filter(std::function<bool(typename CurrentType::value_type)> predicate) { \
+			return FilteredRange<CurrentType>(*this, predicate); \
 		} \
-		CycledRange<CurrentType, T, Distance, Pointer, Reference> \
+		CycledRange<CurrentType> \
 		cycle() { \
-			return CycledRange<CurrentType, T, Distance, Pointer, Reference>(*this); \
+			return CycledRange<CurrentType>(*this); \
 		} \
-		TookRange<CurrentType, T, Distance, Pointer, Reference> \
+		TookRange<CurrentType> \
 		take(size_t size) { \
-			return TookRange<CurrentType, T, Distance, Pointer, Reference>(*this, size); \
+			return TookRange<CurrentType>(*this, size); \
 		} \
-		MappedRange<CurrentType, T, Distance, Pointer, Reference> \
-		map(std::function<T(T)> map) { \
-			return MappedRange<CurrentType, T, Distance, Pointer, Reference>(*this, map); \
+		MappedRange<CurrentType> \
+		map(std::function<typename CurrentType::value_type(typename CurrentType::value_type)> map) { \
+			return MappedRange<CurrentType>(*this, map); \
 		} \
-		InspectedRange<CurrentType, T, Distance, Pointer, Reference> \
-		inspect(std::function<void(T)> inspectFunc) { \
-			return InspectedRange<CurrentType, T, Distance, Pointer, Reference>(*this, inspectFunc); \
+		InspectedRange<CurrentType> \
+		inspect(std::function<void(typename CurrentType::value_type)> inspectFunc) { \
+			return InspectedRange<CurrentType>(*this, inspectFunc); \
 		} \
 		template<typename MyOtherRange> \
-		ZippedRange<CurrentType, MyOtherRange, std::pair<T, typename MyOtherRange::value_type>, Distance, Pointer, Reference> \
+		ZippedRange<CurrentType, MyOtherRange> \
 		zip(MyOtherRange range) { \
-			return ZippedRange<CurrentType, MyOtherRange, std::pair<T, typename MyOtherRange::value_type>, Distance, Pointer, Reference>(*this, range); \
+			return ZippedRange<CurrentType, MyOtherRange>(*this, range); \
 		}
 		
 #endif

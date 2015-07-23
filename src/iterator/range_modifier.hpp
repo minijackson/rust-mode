@@ -8,26 +8,22 @@
 
 namespace rust {
 
-	template<
-		class OriginRange,
-		class T         = typename OriginRange::value_type,
-		class Distance  = std::ptrdiff_t,
-		class Pointer   = T*,
-		class Reference = T&
-	> class RangeModifier : public BasicRange<typename OriginRange::iterator, T, Distance, Pointer, Reference> {
+	template<class OriginRange>
+	class RangeModifier : public BasicRange<typename OriginRange::iterator> {
 
-		typedef BasicRange<typename OriginRange::iterator, T, Distance, Pointer, Reference> ParentType;
-		typedef RangeModifier<OriginRange, T, Distance, Pointer, Reference> CurrentType;
+		typedef BasicRange<typename OriginRange::iterator> ParentType;
+		typedef RangeModifier<OriginRange>                 CurrentType;
 
 	public:
-		typedef typename OriginRange::iterator iterator;
-		typedef T                              value_type;
+		typedef typename OriginRange::iterator        iterator;
+		typedef typename OriginRange::value_type      value_type;
+		typedef typename OriginRange::difference_type difference_type;
 
 		RangeModifier(OriginRange origin)
 			: ParentType(origin.begin(), origin.end()), origin(origin) {}
 
-		virtual Distance size()  = 0;
-		virtual bool     empty() = 0;
+		virtual difference_type size()  = 0;
+		virtual bool            empty() = 0;
 
 		iterator& begin() {
 			return origin.begin();

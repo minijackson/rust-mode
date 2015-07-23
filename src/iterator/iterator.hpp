@@ -26,6 +26,7 @@ namespace rust {
 	public:
 		typedef myIterator iterator;
 		typedef T          value_type;
+		typedef Distance   difference_type;
 
 		Iterator(iterator beginIt, iterator endIt) : ParentType(beginIt, endIt) {}
 		explicit Iterator(iterator beginIt) : ParentType(beginIt) {}

@@ -6,23 +6,18 @@
 
 namespace rust {
 
-	template<
-		class OriginRange,
-		class T         = typename OriginRange::value_type,
-		class Distance  = std::ptrdiff_t,
-		class Pointer   = T*,
-		class Reference = T&
-	> class InspectedRange : public RangeModifier<OriginRange, T, Distance, Pointer, Reference> {
+	template<class OriginRange>
+	class InspectedRange : public RangeModifier<OriginRange> {
 
-		typedef std::function<void(T)> InspectFunc_t;
-		typedef InspectedRange<OriginRange, T, Distance, Pointer, Reference> CurrentType;
-		typedef RangeModifier<OriginRange, T, Distance, Pointer, Reference> ParentType;
+		typedef std::function<void(typename OriginRange::value_type)> InspectFunc_t;
+		typedef InspectedRange<OriginRange> CurrentType;
+		typedef RangeModifier<OriginRange>  ParentType;
 
 	public:
 		InspectedRange(OriginRange range, InspectFunc_t inspectFunc)
 			: ParentType(range), inspectFunc(inspectFunc) {}
 
-		virtual Distance size() {
+		virtual typename CurrentType::difference_type size() {
 			return this->origin.size();
 		}
 
@@ -46,8 +41,8 @@ namespace rust {
 			return this->origin.begin();
 		}
 
-		T beginValue() {
-			T value = this->origin.beginValue();
+		typename CurrentType::value_type beginValue() {
+			typename CurrentType::value_type value = this->origin.beginValue();
 			inspectFunc(value);
 			return value;
 		}
@@ -73,7 +68,7 @@ namespace rust {
 		template<typename Container>
 		Container collectSizeAware(size_t size) {
 			Container cont(size);
-			for(T& value: cont) {
+			for(typename CurrentType::value_type& value: cont) {
 				value = beginValue();
 				++(*this);
 			}
@@ -82,7 +77,7 @@ namespace rust {
 
 		template<typename Container>
 		Container collectSizeUnaware() {
-			std::vector<T> temp;
+			std::vector<typename CurrentType::value_type> temp;
 			auto inserter = std::back_inserter(temp);
 
 			while(begin() != end()) {

@@ -11,24 +11,19 @@
 
 namespace rust {
 
-	template<
-		class OriginRange,
-		class T         = typename OriginRange::value_type,
-		class Distance  = std::ptrdiff_t,
-		class Pointer   = T*,
-		class Reference = T&
-	> class FilteredRange : public RangeModifier<OriginRange, T, Distance, Pointer, Reference> {
+	template<class OriginRange>
+	class FilteredRange : public RangeModifier<OriginRange> {
 
-		typedef std::function<bool(T)> Filter_t;
-		typedef FilteredRange<OriginRange, T, Distance, Pointer, Reference> CurrentType;
-		typedef RangeModifier<OriginRange, T, Distance, Pointer, Reference> ParentType;
+		typedef std::function<bool(typename OriginRange::value_type)> Filter_t;
+		typedef FilteredRange<OriginRange> CurrentType;
+		typedef RangeModifier<OriginRange> ParentType;
 
 	public:
 		FilteredRange(OriginRange range, Filter_t predicate)
 			: ParentType(range), predicate(predicate) {
 		}
 
-		virtual Distance size() {
+		virtual typename CurrentType::difference_type size() {
 			throw UnknownValueException("Cannot know the size of a filtered range before consuming values");
 		}
 
@@ -43,7 +38,7 @@ namespace rust {
 			if(!this->origin.hasEnd()) {
 				throw InfiniteRangeException();
 			} else {
-				std::vector<T> temp;
+				std::vector<typename CurrentType::value_type> temp;
 				auto inserter = std::back_inserter(temp);
 
 				while(begin() != end()) {
@@ -72,7 +67,7 @@ namespace rust {
 			}
 		}
 
-		T beginValue() {
+		typename CurrentType::value_type beginValue() {
 			return this->origin.beginValue();
 		}
 

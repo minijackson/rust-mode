@@ -8,16 +8,11 @@
 
 namespace rust {
 
-	template<
-		class OriginRange,
-		class T         = typename OriginRange::value_type,
-		class Distance  = std::ptrdiff_t,
-		class Pointer   = T*,
-		class Reference = T&
-	> class CycledRange : public RangeModifier<OriginRange, T, Distance, Pointer, Reference> {
+	template<class OriginRange> 
+	class CycledRange : public RangeModifier<OriginRange> {
 
-		typedef CycledRange<OriginRange, T, Distance, Pointer, Reference> CurrentType;
-		typedef RangeModifier<OriginRange, T, Distance, Pointer, Reference> ParentType;
+		typedef CycledRange<OriginRange>   CurrentType;
+		typedef RangeModifier<OriginRange> ParentType;
 
 	public:
 		CycledRange(OriginRange range)
@@ -25,7 +20,7 @@ namespace rust {
 			this->noEnd = true;
 		}
 
-		virtual Distance size() {
+		virtual typename CurrentType::difference_type size() {
 			throw InfiniteRangeException();
 		}
 
@@ -51,7 +46,7 @@ namespace rust {
 			return other;
 		}
 
-		T beginValue() {
+		typename CurrentType::value_type beginValue() {
 			return this->origin.beginValue();
 		}
 

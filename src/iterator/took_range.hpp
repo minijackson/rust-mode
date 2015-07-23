@@ -8,23 +8,18 @@
 
 namespace rust {
 
-	template<
-		class OriginRange,
-		class T         = typename OriginRange::value_type,
-		class Distance  = std::ptrdiff_t,
-		class Pointer   = T*,
-		class Reference = T&
-	> class TookRange : public RangeModifier<OriginRange, T, Distance, Pointer, Reference> {
+	template<class OriginRange>
+	class TookRange : public RangeModifier<OriginRange> {
 
-		typedef TookRange<OriginRange, T, Distance, Pointer, Reference> CurrentType;
-		typedef RangeModifier<OriginRange, T, Distance, Pointer, Reference> ParentType;
+		typedef TookRange<OriginRange>     CurrentType;
+		typedef RangeModifier<OriginRange> ParentType;
 
 	public:
 		TookRange(OriginRange range, size_t count)
 			: ParentType(range), count(count) {
 		}
 
-		virtual Distance size() {
+		virtual typename CurrentType::difference_type size() {
 			return count;
 		}
 
@@ -68,7 +63,7 @@ namespace rust {
 			}
 		}
 
-		T beginValue() {
+		typename CurrentType::value_type beginValue() {
 			return this->origin.beginValue();
 		}
 
@@ -82,7 +77,7 @@ namespace rust {
 		template<typename Container>
 		Container collectSizeAware(size_t size) {
 			Container cont(size);
-			for(T& value: cont) {
+			for(typename CurrentType::value_type& value: cont) {
 				value = beginValue();
 				++(*this);
 			}
@@ -91,7 +86,7 @@ namespace rust {
 
 		template<typename Container>
 		Container collectSizeUnaware() {
-			std::vector<T> temp;
+			std::vector<typename CurrentType::value_type> temp;
 			auto inserter = std::back_inserter(temp);
 
 			while(progress < count && begin() != end()) {

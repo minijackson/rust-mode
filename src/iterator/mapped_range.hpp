@@ -10,24 +10,19 @@
 
 namespace rust {
 
-	template<
-		class OriginRange,
-		class T         = typename OriginRange::value_type,
-		class Distance  = std::ptrdiff_t,
-		class Pointer   = T*,
-		class Reference = T&
-	> class MappedRange : public RangeModifier<OriginRange, T, Distance, Pointer, Reference> {
+	template<class OriginRange>
+	class MappedRange : public RangeModifier<OriginRange> {
 
-		typedef std::function<T(T)> Map_t;
-		typedef MappedRange<OriginRange, T, Distance, Pointer, Reference> CurrentType;
-		typedef RangeModifier<OriginRange, T, Distance, Pointer, Reference> ParentType;
+		typedef std::function<typename OriginRange::value_type(typename OriginRange::value_type)> Map_t;
+		typedef MappedRange<OriginRange>   CurrentType;
+		typedef RangeModifier<OriginRange> ParentType;
 
 	public:
 
 		MappedRange(OriginRange range, Map_t mapFunc)
 			: ParentType(range), mapFunc(mapFunc) {}
 
-		virtual Distance size() {
+		virtual typename CurrentType::difference_type size() {
 			return this->origin.size();
 		}
 
@@ -51,7 +46,7 @@ namespace rust {
 			return this->origin.begin();
 		}
 
-		T beginValue() {
+		typename CurrentType::value_type beginValue() {
 			return mapFunc(this->origin.beginValue());
 		}
 
@@ -76,7 +71,7 @@ namespace rust {
 		template<typename Container>
 		Container collectSizeAware(size_t size) {
 			Container cont(size);
-			for(T& value: cont) {
+			for(typename CurrentType::value_type& value: cont) {
 				value = beginValue();
 				++(*this);
 			}
@@ -85,7 +80,7 @@ namespace rust {
 
 		template<typename Container>
 		Container collectSizeUnaware() {
-			std::vector<T> temp;
+			std::vector<typename CurrentType::value_type> temp;
 			auto inserter = std::back_inserter(temp);
 
 			while(begin() != end()) {
