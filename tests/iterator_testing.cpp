@@ -312,10 +312,34 @@ BOOST_AUTO_TEST_CASE(iterator_library_filitered_zipped_iterator) {
 	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filteredZipped.begin()));
 }
 
+BOOST_AUTO_TEST_CASE(iterator_library_unzipped_filitered_zipped_iterator) {
+	std::vector<int> vec{1,2,3,4,5,6,7,8};
+	std::vector<char> vec2{'a','b','c','d','e'};
+	auto iterator  = rust::iter(vec);
+	auto iterator2 = rust::iter(vec2);
+
+	std::vector<int>  result1;
+	std::vector<char> result2;
+
+	std::tie(result1, result2) = iterator
+		.zip(iterator2)
+		.filter([] (std::pair<int, char> x) {
+			return x != std::make_pair(3,'c');
+		})
+		.unzip<std::vector<int>, std::vector<char>>();
+
+	std::vector<int>  expected1{1,2,4,5};
+	std::vector<char> expected2{'a','b','d','e'};
+	BOOST_CHECK_EQUAL(result1.size(), 4);
+	BOOST_CHECK(std::equal(expected1.begin(), expected1.end(), result1.begin()));
+	BOOST_CHECK_EQUAL(result2.size(), 4);
+	BOOST_CHECK(std::equal(expected2.begin(), expected2.end(), result2.begin()));
+}
+
 BOOST_AUTO_TEST_CASE(iterator_library_chained_iterator) {
 	auto iterator   = rust::Sequence(1,5),
 	     iterator2  = rust::Sequence(5,10),
-		 expectedIt = rust::Sequence(1,10);
+	     expectedIt = rust::Sequence(1,10);
 
 	std::vector<int> chained = iterator
 		.chain(iterator2)
@@ -330,7 +354,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_chained_iterator) {
 BOOST_AUTO_TEST_CASE(iterator_library_mapped_chained_iterator) {
 	auto iterator   = rust::Sequence(1,5),
 	     iterator2  = rust::Sequence(5,10),
-		 expectedIt = rust::Sequence(11,20);
+	     expectedIt = rust::Sequence(11,20);
 
 	std::vector<int> mappedChained = iterator
 		.chain(iterator2)
