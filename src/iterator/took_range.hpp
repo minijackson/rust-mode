@@ -88,8 +88,10 @@ namespace rust {
 
 			// Can't use template specialization in this case but I can do
 			// THIS:
-			if(std::is_same<Container, std::vector<int> >::value) {
-				return temp;
+		    if(std::is_same<
+		           Container,
+		           std::vector<typename CurrentType::value_type>>::value) {
+			    return temp;
 			} else {
 				Container cont(temp.size());
 				std::copy(temp.begin(), temp.end(), cont.begin());
