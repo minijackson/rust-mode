@@ -3,6 +3,7 @@
 #include <utility>
 #include <type_traits>
 #include <vector>
+#include <functional>
 
 namespace rust {
 template <class OriginRange> class FilteredRange;
@@ -108,6 +109,18 @@ template <class OriginRange, class OtherRange> class ChainedRange;
 				return std::make_pair(firstCont, secondCont);                  \
 			}                                                                  \
 		}                                                                      \
+	}                                                                          \
+	template <typename FirstContainer, typename SecondContainer>               \
+	std::pair<FirstContainer, SecondContainer> partition(                      \
+	    std::function<bool(typename CurrentType::value_type)> predicate) {     \
+		/* WTF template here?! */                                              \
+		FirstContainer first =                                                 \
+		    this->filter(predicate).template collect<FirstContainer>();        \
+		SecondContainer second =                                               \
+		    this->filter([predicate](typename CurrentType::value_type el) {    \
+			return !predicate(el);                                             \
+			}).template collect<SecondContainer>();                            \
+		return std::make_pair(first, second);                                  \
 	}
 
 #endif
