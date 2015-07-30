@@ -365,3 +365,35 @@ BOOST_AUTO_TEST_CASE(iterator_library_partitioned_iterator) {
 	BOOST_CHECK(
 	    std::equal(expectedOdd.begin(), expectedOdd.end(), odd.begin()));
 }
+
+BOOST_AUTO_TEST_CASE(iterator_library_took_while_iterator) {
+	auto iterator = rust::Sequence(1, 10);
+
+	std::vector<int> tookWhile = iterator.take_while([](int x) {
+		return x * x < 30;
+	}).collect<std::vector<int>>();
+
+	std::vector<int> expected{1, 2, 3, 4, 5};
+
+	BOOST_CHECK_EQUAL(tookWhile.size(), 5);
+	BOOST_CHECK(
+	    std::equal(expected.begin(), expected.end(), tookWhile.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_took_while_inspected_iterator) {
+	auto iterator = rust::Sequence(1, 10);
+
+	std::ostringstream os;
+
+	std::vector<int> tookWhile =
+	    iterator.inspect([&os](int x) { os << x << " "; })
+	        .take_while([](int x) { return x * x < 30; })
+	        .collect<std::vector<int>>();
+
+	std::vector<int> expected{1, 2, 3, 4, 5};
+
+	BOOST_CHECK_EQUAL(os.str(), "1 2 3 4 5 6 ");
+	BOOST_CHECK_EQUAL(tookWhile.size(), 5);
+	BOOST_CHECK(
+	    std::equal(expected.begin(), expected.end(), tookWhile.begin()));
+}

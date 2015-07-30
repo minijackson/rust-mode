@@ -19,6 +19,8 @@ template <class OriginRange> class InspectedRange;
 template <class OriginRange, class OtherRange> class ZippedRange;
 
 template <class OriginRange, class OtherRange> class ChainedRange;
+
+template <class OriginRange> class TookWhileRange;
 }
 
 #define RANGE_MODIFIERS                                                        \
@@ -121,6 +123,10 @@ template <class OriginRange, class OtherRange> class ChainedRange;
 			return !predicate(el);                                             \
 			}).template collect<SecondContainer>();                            \
 		return std::make_pair(first, second);                                  \
+	}                                                                          \
+	TookWhileRange<CurrentType> take_while(                                    \
+	    std::function<bool(typename CurrentType::value_type)> predicate) {     \
+		return TookWhileRange<CurrentType>(*this, predicate);                  \
 	}
 
 #endif

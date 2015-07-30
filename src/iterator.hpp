@@ -7,6 +7,7 @@
 #include "iterator/mapped_range.hpp"
 #include "iterator/sequence.hpp"
 #include "iterator/took_range.hpp"
+#include "iterator/took_while_range.hpp"
 #include "iterator/zipped_range.hpp"
 
 namespace rust {
