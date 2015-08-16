@@ -6,21 +6,21 @@
 #include <functional>
 
 namespace rust {
-template <class OriginRange> class FilteredRange;
+	template <class OriginRange> class FilteredRange;
 
-template <class OriginRange> class CycledRange;
+	template <class OriginRange> class CycledRange;
 
-template <class OriginRange> class TookRange;
+	template <class OriginRange> class TookRange;
 
-template <class OriginRange> class MappedRange;
+	template <class OriginRange> class MappedRange;
 
-template <class OriginRange> class InspectedRange;
+	template <class OriginRange> class InspectedRange;
 
-template <class OriginRange, class OtherRange> class ZippedRange;
+	template <class OriginRange, class OtherRange> class ZippedRange;
 
-template <class OriginRange, class OtherRange> class ChainedRange;
+	template <class OriginRange, class OtherRange> class ChainedRange;
 
-template <class OriginRange> class TookWhileRange;
+	template <class OriginRange> class TookWhileRange;
 }
 
 #define RANGE_MODIFIERS                                                        \
@@ -120,13 +120,26 @@ template <class OriginRange> class TookWhileRange;
 		    this->filter(predicate).template collect<FirstContainer>();        \
 		SecondContainer second =                                               \
 		    this->filter([predicate](typename CurrentType::value_type el) {    \
-			return !predicate(el);                                             \
+				return !predicate(el);                                         \
 			}).template collect<SecondContainer>();                            \
 		return std::make_pair(first, second);                                  \
 	}                                                                          \
 	TookWhileRange<CurrentType> take_while(                                    \
 	    std::function<bool(typename CurrentType::value_type)> predicate) {     \
 		return TookWhileRange<CurrentType>(*this, predicate);                  \
+	}                                                                          \
+	typename CurrentType::value_type fold(                                     \
+	    typename CurrentType::value_type foldValue,                            \
+	    std::function<typename CurrentType::value_type(                        \
+	        typename CurrentType::value_type,                                  \
+	        typename CurrentType::value_type)> foldFunc) {                     \
+		std::vector<typename CurrentType::value_type> rangeValues =            \
+		    this->template collect<                                            \
+		        std::vector<typename CurrentType::value_type>>();              \
+		for(typename CurrentType::value_type rangeValue : rangeValues) {       \
+			foldValue = foldFunc(foldValue, rangeValue);                       \
+		}                                                                      \
+		return foldValue;                                                      \
 	}
 
 #endif

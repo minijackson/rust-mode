@@ -90,9 +90,9 @@ BOOST_AUTO_TEST_CASE(iterator_library_rust_iterator_to_list) {
 BOOST_AUTO_TEST_CASE(iterator_library_collected_filter) {
 	auto iterator = rust::Sequence(1, 31);
 
-	std::vector<int> filtered = iterator.filter([](int x) {
-		return x % 2 == 0;
-	}).collect<std::vector<int>>();
+	std::vector<int> filtered =
+	    iterator.filter([](int x) { return x % 2 == 0; })
+	        .collect<std::vector<int>>();
 
 	std::vector<int> expected{2,  4,  6,  8,  10, 12, 14, 16,
 	                          18, 20, 22, 24, 26, 28, 30};
@@ -142,9 +142,11 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_filtered_cycled_iterator) {
 	std::vector<int> vec{1, 2, 3};
 	auto iterator = rust::iter(vec);
 
-	std::vector<int> filteredCycled = iterator.cycle().filter([](int x) {
-		return x % 2 != 0;
-	}).take(5).collect<std::vector<int>>();
+	std::vector<int> filteredCycled =
+	    iterator.cycle()
+	        .filter([](int x) { return x % 2 != 0; })
+	        .take(5)
+	        .collect<std::vector<int>>();
 
 	std::vector<int> expected{1, 3, 1, 3, 1};
 	BOOST_CHECK_EQUAL(filteredCycled.size(), 5);
@@ -157,9 +159,10 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_filtered_took_cycled_iterator) {
 	auto iterator = rust::iter(vec);
 
 	std::vector<int> filteredTookCycled =
-	    iterator.cycle().take(9).filter([](int x) {
-		    return x == 1;
-		}).collect<std::vector<int>>();
+	    iterator.cycle()
+	        .take(9)
+	        .filter([](int x) { return x == 1; })
+	        .collect<std::vector<int>>();
 
 	std::vector<int> expected{1, 1, 1};
 	BOOST_CHECK_EQUAL(filteredTookCycled.size(), 3);
@@ -218,9 +221,10 @@ BOOST_AUTO_TEST_CASE(iterator_library_mapped_filtered_iterator) {
 	std::vector<int> vec{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 	auto iterator = rust::iter(vec);
 
-	std::vector<int> mappedFiltered = iterator.filter([](int x) {
-		return x % 2 == 0;
-	}).map([](int x) { return x * 2; }).collect<std::vector<int>>();
+	std::vector<int> mappedFiltered =
+	    iterator.filter([](int x) { return x % 2 == 0; })
+	        .map([](int x) { return x * 2; })
+	        .collect<std::vector<int>>();
 
 	std::vector<int> expected{4, 8, 12, 16, 20};
 	BOOST_CHECK_EQUAL(mappedFiltered.size(), 5);
@@ -234,9 +238,9 @@ BOOST_AUTO_TEST_CASE(iterator_library_inspected_iterator) {
 
 	std::ostringstream os;
 
-	std::vector<int> inspected = iterator.inspect([&os](int x) {
-		os << x << ",";
-	}).collect<std::vector<int>>();
+	std::vector<int> inspected =
+	    iterator.inspect([&os](int x) { os << x << ","; })
+	        .collect<std::vector<int>>();
 
 	std::vector<int> expected{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 	BOOST_CHECK_EQUAL(inspected.size(), 10);
@@ -285,9 +289,11 @@ BOOST_AUTO_TEST_CASE(iterator_library_filitered_zipped_iterator) {
 	auto iterator2 = rust::iter(vec2);
 
 	std::vector<std::pair<int, char>> filteredZipped =
-	    iterator.zip(iterator2).filter([](std::pair<int, char> x) {
-		    return x != std::make_pair(3, 'c');
-		}).collect<std::vector<std::pair<int, char>>>();
+	    iterator.zip(iterator2)
+	        .filter([](std::pair<int, char> x) {
+		        return x != std::make_pair(3, 'c');
+		    })
+	        .collect<std::vector<std::pair<int, char>>>();
 
 	std::vector<std::pair<int, char>> expected{
 	    {1, 'a'}, {2, 'b'}, {4, 'd'}, {5, 'e'}};
@@ -306,9 +312,11 @@ BOOST_AUTO_TEST_CASE(iterator_library_unzipped_filitered_zipped_iterator) {
 	std::vector<char> result2;
 
 	std::tie(result1, result2) =
-	    iterator.zip(iterator2).filter([](std::pair<int, char> x) {
-		    return x != std::make_pair(3, 'c');
-		}).unzip<std::vector<int>, std::vector<char>>();
+	    iterator.zip(iterator2)
+	        .filter([](std::pair<int, char> x) {
+		        return x != std::make_pair(3, 'c');
+		    })
+	        .unzip<std::vector<int>, std::vector<char>>();
 
 	std::vector<int> expected1{1, 2, 4, 5};
 	std::vector<char> expected2{'a', 'b', 'd', 'e'};
@@ -337,9 +345,9 @@ BOOST_AUTO_TEST_CASE(iterator_library_mapped_chained_iterator) {
 	auto iterator = rust::Sequence(1, 5), iterator2 = rust::Sequence(5, 10),
 	     expectedIt = rust::Sequence(11, 20);
 
-	std::vector<int> mappedChained = iterator.chain(iterator2).map([](int x) {
-		return x + 10;
-	}).collect<std::vector<int>>();
+	std::vector<int> mappedChained = iterator.chain(iterator2)
+	                                     .map([](int x) { return x + 10; })
+	                                     .collect<std::vector<int>>();
 
 	std::vector<int> expected = expectedIt.collect<std::vector<int>>();
 
@@ -396,4 +404,23 @@ BOOST_AUTO_TEST_CASE(iterator_library_took_while_inspected_iterator) {
 	BOOST_CHECK_EQUAL(tookWhile.size(), 5);
 	BOOST_CHECK(
 	    std::equal(expected.begin(), expected.end(), tookWhile.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_folded_sequence) {
+	auto iterator = rust::Sequence(1, 10);
+	int sum = iterator.fold(0, [](int sum, int value) {
+		return sum + value;
+	});
+	BOOST_CHECK_EQUAL(sum, 45);
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_folded_filtered_sequence) {
+	auto iterator = rust::Sequence(1, 10);
+
+	int sum = iterator.filter([](int x) {
+		return x % 2 != 0;
+	}).fold(0, [](int sum, int value) {
+		return sum + value;
+	});
+	BOOST_CHECK_EQUAL(sum, 25);
 }
