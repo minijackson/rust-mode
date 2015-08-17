@@ -33,6 +33,13 @@ namespace rust {
 			}
 		}
 
+		T unwrap() {
+			if(!hasSome) {
+				panic("Tried to unwrap a {None} value");
+			}
+			return value;
+		}
+
 		friend std::ostream& operator<<(std::ostream& os,
 		                                Option<T> const& other) {
 			if(other.hasSome) {

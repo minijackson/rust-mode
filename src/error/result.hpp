@@ -38,6 +38,13 @@ namespace rust {
 			}
 		}
 
+		T unwrap() {
+			if(!hasSome) {
+				panic("Tried to unwrap an {Err} value: '%s'", errorMsg);
+			}
+			return value;
+		}
+
 		friend std::ostream& operator<<(std::ostream& os,
 		                                Result<T, E> const& other) {
 			if(other.hasSome) {
@@ -66,6 +73,10 @@ namespace rust {
 		}
 
 		operator T() {
+			return value;
+		}
+
+		T unwrap() {
 			return value;
 		}
 

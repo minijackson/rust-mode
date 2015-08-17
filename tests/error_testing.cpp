@@ -47,3 +47,20 @@ BOOST_AUTO_TEST_CASE(error_library_option_casting) {
 	BOOST_CHECK_EQUAL(myResult, 'y');
 	BOOST_CHECK_THROW(char myFailedResult = someReturnNone, NoneCastException);
 }
+
+BOOST_AUTO_TEST_CASE(error_library_result_unwrapping) {
+	rust::Result<char, const char*> someReturnValue =
+	    rust::Ok<char, const char*>('y');
+	BOOST_CHECK_EQUAL(someReturnValue.unwrap(), 'y');
+	
+	// Fails:
+	//rust::Err<char, const char*>("Error").unwrap();
+}
+
+BOOST_AUTO_TEST_CASE(error_library_option_unwrapping) {
+	rust::Option<char> someReturnValue = rust::Some('y');
+	BOOST_CHECK_EQUAL(someReturnValue.unwrap(), 'y');
+
+	// Fails:
+	//rust::None<char>().unwrap();
+}
