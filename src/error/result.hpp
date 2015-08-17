@@ -1,5 +1,7 @@
-#ifndef RUST_RESULT
-#define RUST_RESULT
+#ifndef RUST_RESULT_HPP
+#define RUST_RESULT_HPP
+
+#include "../exceptions/err_cast_exception.hpp"
 
 #include <ostream>
 
@@ -28,6 +30,14 @@ namespace rust {
 			return !hasSome && other.errorMsg == errorMsg;
 		}
 
+		operator T() {
+			if(hasSome) {
+				return value;
+			} else {
+				throw ErrCastException();
+			}
+		}
+
 		friend std::ostream& operator<<(std::ostream& os,
 		                                Result<T, E> const& other) {
 			if(other.hasSome) {
@@ -53,6 +63,10 @@ namespace rust {
 		template <typename E>
 		bool operator==(Result<T, E> const& other) const {
 			return other.hasSome && other.value == value;
+		}
+
+		operator T() {
+			return value;
 		}
 
 		friend std::ostream& operator<<(std::ostream& os,

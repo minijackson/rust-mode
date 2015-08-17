@@ -1,5 +1,7 @@
-#ifndef RUST_OPTION
-#define RUST_OPTION
+#ifndef RUST_OPTION_HPP
+#define RUST_OPTION_HPP
+
+#include "../exceptions/none_cast_exception.cpp"
 
 #include <ostream>
 
@@ -21,6 +23,14 @@ namespace rust {
 
 		bool operator==(Option<void> const&) const {
 			return !hasSome;
+		}
+
+		operator T() {
+			if(hasSome) {
+				return value;
+			} else {
+				throw NoneCastException();
+			}
 		}
 
 		friend std::ostream& operator<<(std::ostream& os,
