@@ -1,3 +1,6 @@
+#ifndef ITERATOR_LIBRARY_MAIN_HPP
+#define ITERATOR_LIBRARY_MAIN_HPP
+
 #include "iterator/iterator.hpp"
 
 #include "iterator/chained_range.hpp"
@@ -15,3 +18,5 @@ namespace rust {
 		return Iterator<typename Container::iterator>(cont.begin(), cont.end());
 	}
 }
+
+#endif
