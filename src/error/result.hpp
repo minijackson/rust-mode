@@ -2,6 +2,7 @@
 #define RUST_RESULT_HPP
 
 #include "../exceptions/err_cast_exception.hpp"
+#include "../utils/errors.hpp"
 
 #include <ostream>
 

@@ -2,6 +2,7 @@
 #define RUST_OPTION_HPP
 
 #include "../exceptions/none_cast_exception.cpp"
+#include "../utils/errors.hpp"
 
 #include <ostream>
 
