@@ -1,5 +1,6 @@
 # Binairies
 tests/iterator_testing
+tests/utils_testing
 
 # Backup files
 *.bak
