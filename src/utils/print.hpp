@@ -6,16 +6,30 @@
 #include <iostream>
 
 namespace rust {
+	std::string format_args(std::string format);
+	template <typename T, typename... Args>
+	std::string format_args(std::string format, T firstArg, Args... args);
+}
 
-	const char* format_args(std::string format) {
-		return format.c_str();
+#include "errors.hpp"
+
+namespace rust {
+
+	std::string format_args(std::string format) {
+		if(format.find("{}") != std::string::npos) {
+			panic("unused brackets while formating");
+		}
+		return format;
 	}
 
 	template <typename T, typename... Args>
-	const char* format_args(std::string format, T firstArg, Args... args) {
+	std::string format_args(std::string format, T firstArg, Args... args) {
 		std::ostringstream os;
 
-		int pos = format.find("{}");
+		size_t pos = format.find("{}");
+		if(pos == std::string::npos) {
+			panic("too many arguments for formating");
+		}
 		os << format.substr(0, pos) << firstArg << format.substr(pos+2);
 		return format_args(os.str(), args...);
 	}

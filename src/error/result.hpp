@@ -41,7 +41,7 @@ namespace rust {
 
 		T unwrap() {
 			if(!hasSome) {
-				panic("Tried to unwrap an {Err} value: '%s'", errorMsg);
+				panic("Called `Result::unwrap` on an `Err` value: `{}`", errorMsg);
 			}
 			return value;
 		}
