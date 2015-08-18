@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(error_library_result_unwrapping) {
 	rust::Result<char, const char*> someReturnValue =
 	    rust::Ok<char, const char*>('y');
 	BOOST_CHECK_EQUAL(someReturnValue.unwrap(), 'y');
-	
+
 	// Fails:
 	//rust::Err<char, const char*>("Error").unwrap();
 }
@@ -63,4 +63,28 @@ BOOST_AUTO_TEST_CASE(error_library_option_unwrapping) {
 
 	// Fails:
 	//rust::None<char>().unwrap();
+}
+
+rust::Result<char, char> rTryMacroTest(rust::Result<char, char> arg) {
+	rTry(arg);
+	return rust::Ok<char, char>('z');
+}
+
+rust::Result<char, char> rTryMacroSecondTest(rust::Result<char, char> arg) {
+	rTry(rTryMacroTest(arg));
+	return rust::Ok<char, char>('x');
+}
+
+BOOST_AUTO_TEST_CASE(error_library_try_macro) {
+	// Compilation failure
+	//rTry(rust::Some('y'));
+
+	BOOST_CHECK_EQUAL((rTryMacroTest(rust::Ok<char, char>('a'))),
+	                  (rust::Ok<char, char>('z')));
+	BOOST_CHECK_EQUAL((rTryMacroTest(rust::Err<char, char>('n'))),
+	                  (rust::Err<char, char>('n')));
+	BOOST_CHECK_EQUAL((rTryMacroSecondTest(rust::Ok<char, char>('a'))),
+	                  (rust::Ok<char, char>('x')));
+	BOOST_CHECK_EQUAL((rTryMacroSecondTest(rust::Err<char, char>('n'))),
+	                  (rust::Err<char, char>('n')));
 }
