@@ -1,5 +1,5 @@
-#ifndef ITERATOR_LIBRARY_MAIN_HPP
-#define ITERATOR_LIBRARY_MAIN_HPP
+#ifndef RUST_ITERATOR_LIBRARY_MAIN_HPP
+#define RUST_ITERATOR_LIBRARY_MAIN_HPP
 
 #include "iterator/iterator.hpp"
 
