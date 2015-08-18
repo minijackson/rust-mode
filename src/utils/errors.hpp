@@ -8,6 +8,8 @@ namespace rust {
 }
 
 #define panic(...) ::rust::realPanic(__FILE__, __LINE__, __VA_ARGS__)
+#define unreachable(...)                                                       \
+	::rust::realUnreachable(__FILE__, __LINE__, __VA_ARGS__)
 
 #include "print.hpp"
 
@@ -24,8 +26,14 @@ namespace rust {
 		          << lineNo << std::endl;
 		exit(101);
 	}
-}
 
-#define unreachable() panic("internal error: entered unreachable code")
+	template <typename... Args>
+	void realUnreachable(const char* filename, int lineNo, const char* msg,
+	                     Args... args) {
+		realPanic(filename, lineNo,
+		          "internal error: entered unreachable code: {}",
+		          ::rust::format_args(msg, args...));
+	}
+}
 
 #endif
