@@ -2,6 +2,9 @@
 tests/iterator_testing
 tests/error_testing
 tests/utils_testing
+tests/readme_error_example
+tests/readme_iterator_example
+tests/readme_utils_example
 
 # Backup files
 *.bak
