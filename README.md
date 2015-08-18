@@ -191,15 +191,15 @@ int main() {
 
 These functions are implemented:
 
-| Function                  | Description                                               |
-|---------------------------|-----------------------------------------------------------|
-| format_args(string, ...)  | Format the string with the given arguments (see example). |
-| print(string, ...)        | Format and print the string to stdout.                    |
-| println(string, ...)      | Format and print the string to stdout with a newline.     |
+| Function                        | Description                                               |
+|---------------------------------|-----------------------------------------------------------|
+| ```format_args(string, ...)```  | Format the string with the given arguments (see example). |
+| ```print(string, ...)```        | Format and print the string to stdout.                    |
+| ```println(string, ...)```      | Format and print the string to stdout with a newline.     |
 
 These macros are defined:
 
-| Macro                    | Description                                                                                            |
-|--------------------------|--------------------------------------------------------------------------------------------------------|
-| panic(string, ...)       | Make the program exit with a positive error code (101) and print the formated string as error message. |
-| unreachable(string, ...) | Make the program exit with a positive error code (101) and print the formated string as error message while indicating that some normally unreachable code has been encountered. |
+| Macro                          | Description                                                                                            |
+|--------------------------------|--------------------------------------------------------------------------------------------------------|
+| ```panic(string, ...)```       | Make the program exit with a positive error code (101) and print the formated string as error message. |
+| ```unreachable(string, ...)``` | Make the program exit with a positive error code (101) and print the formated string as error message while indicating that some normally unreachable code has been encountered. |
