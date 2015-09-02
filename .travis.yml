@@ -18,4 +18,4 @@ script:
     - ./tests/iterator_testing
     - ./tests/utils_testing
 after_success:
-    - coveralls --gcov-options '\-lp'
+    - coveralls --exclude tests --gcov /usr/bin/gcov-4.8 --gcov-options '\-lp'
