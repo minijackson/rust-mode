@@ -1,8 +1,9 @@
+sudo: false
 language: c++
 compiler:
     - gcc
 before_install:
-      - sudo pip install cpp-coveralls
+      - pip install cpp-coveralls
 script:
     - scons libmode=coverall testmode=coverall
     - ./tests/error_testing
