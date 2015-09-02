@@ -11,6 +11,7 @@ compiler:
 before_install:
     - pip install --user cpp-coveralls
 script:
+    - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
     - scons libmode=coverall testmode=coverall
     - ./tests/error_testing
     - ./tests/iterator_testing
