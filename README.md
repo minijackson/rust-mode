@@ -1,5 +1,8 @@
 # rust-mode
 
+[![Build Status](https://travis-ci.org/minijackson/rust-mode.svg?branch=master)](https://travis-ci.org/minijackson/rust-mode)
+[![Coverage Status](https://coveralls.io/repos/minijackson/rust-mode/badge.svg?branch=master&service=github)](https://coveralls.io/github/minijackson/rust-mode?branch=master)
+
 Library to imitate some Rust concepts in C++
 
 ## Why?
