@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-env = Environment(CXXFLAGS=["-std=c++11", "-Wall", "-Wextra", "-fdiagnostics-color=always"])
+env = Environment(CXXFLAGS=["-std=c++11", "-Wall", "-Wextra"])
 
 CXX     = ARGUMENTS.get("CXX", "g++")
 env["CXX"] = CXX
