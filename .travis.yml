@@ -1,0 +1,12 @@
+language: c++
+compiler:
+    - gcc
+before_install:
+      - sudo pip install cpp-coveralls
+script:
+    - scons libmode=coverall testmode=coverall
+    - ./tests/error_testing
+    - ./tests/iterator_testing
+    - ./tests/utils_testing
+after_success:
+    - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
