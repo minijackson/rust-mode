@@ -1,9 +1,11 @@
-sudo: false
+sudo: required
 language: c++
 compiler:
     - gcc
 before_install:
     - pip install --user cpp-coveralls
+install:
+    - sudo apt-get install -qq g++-4.8
 script:
     - scons libmode=coverall testmode=coverall
     - ./tests/error_testing
