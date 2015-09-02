@@ -4,6 +4,9 @@ testEnv = Environment(CXXFLAGS=["-std=c++11", "-O2", "-Wall", "-Wextra", "-fdiag
 #testEnv = Environment(CXXFLAGS=["-std=c++11", "-O2", "-Wall", "-Wextra", "-fdiagnostics-color=always"], CXX="clang++", CPPPATH=["#src"], LIBS=["rust-mode", "boost_unit_test_framework"], LIBPATH=["#"])
 #testEnv = Environment(CXXFLAGS=["-std=c++11", "-ggdb", "-Wall", "-Wextra", "-fdiagnostics-color=always"], CPPPATH=["#src"], LIBS=["rust-mode", "boost_unit_test_framework"], LIBPATH=["#"])
 
+CXX = ARGUMENTS.get("CXX", "g++")
+testEnv["CXX"] = CXX
+
 testmode = ARGUMENTS.get("testmode", "release")
 
 if testmode == "release":

@@ -2,6 +2,9 @@
 
 env = Environment(CXXFLAGS=["-std=c++11", "-Wall", "-Wextra", "-fdiagnostics-color=always"])
 
+CXX     = ARGUMENTS.get("CXX", "g++")
+env["CXX"] = CXX
+
 libmode = ARGUMENTS.get("libmode", "release")
 
 if libmode == "release":
