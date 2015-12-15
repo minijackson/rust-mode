@@ -38,6 +38,7 @@ namespace rust {
 
 	private:
 		int value;
+		bool infinite = false;
 	};
 
 	class Sequence : public Iterator<SequenceIterator> {
