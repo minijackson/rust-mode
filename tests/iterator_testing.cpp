@@ -102,11 +102,15 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_took_iterator) {
 BOOST_AUTO_TEST_CASE(iterator_library_took_values) {
 	std::vector<int> emptyVec{};
 
-	auto iterator = rust::Sequence(1, 11).take(5);
+	auto iterator        = rust::Sequence(1, 11).take(5);
+	auto ifiniteIterator = rust::Sequence(1).take(5);
 	auto emptyIt  = rust::iter(emptyVec).take(5);
 
 	BOOST_CHECK_EQUAL(iterator.size(), 5);
 	BOOST_CHECK_EQUAL(iterator.empty(), false);
+
+	BOOST_CHECK_EQUAL(ifiniteIterator.size(), 5);
+	BOOST_CHECK_EQUAL(ifiniteIterator.empty(), false);
 
 	BOOST_CHECK_EQUAL(emptyIt.size(), 0);
 	BOOST_CHECK_EQUAL(emptyIt.empty(), true);
