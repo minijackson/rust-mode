@@ -20,7 +20,17 @@ namespace rust {
 		}
 
 		virtual typename CurrentType::difference_type size() {
-			return count;
+			try {
+				size_t originSize = this->origin.size();
+
+				if(originSize < count) {
+					return originSize;
+				} else {
+					return count;
+				}
+			} catch(InfiniteRangeException) {
+				return count;
+			}
 		}
 
 		virtual bool empty() {
