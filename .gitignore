@@ -1,3 +1,9 @@
+# Profiling / Coverall files
+gmon.out
+*.gcda
+*.gcno
+*.gcov
+
 # Binairies
 tests/iterator_testing
 tests/error_testing

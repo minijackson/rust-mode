@@ -3,21 +3,33 @@
 using namespace rust;
 
 SequenceIterator::SequenceIterator()
-	: value(1) {}
+      : infinite(true) {}
 
 SequenceIterator::SequenceIterator(int value)
 	: value(value) {}
 
 SequenceIterator::reference SequenceIterator::operator*() {
-	return value;
+	if(infinite) {
+		throw InfiniteRangeException();
+	} else {
+		return value;
+	}
 }
 
 bool SequenceIterator::operator==(SequenceIterator other) {
-	return value == other.value;
+	if(infinite || other.infinite) {
+		return false;
+	} else {
+		return value == other.value;
+	}
 }
 
 bool SequenceIterator::operator!=(SequenceIterator other) {
-	return value != other.value;
+	if(infinite || other.infinite) {
+		return true;
+	} else {
+		return value != other.value;
+	}
 }
 
 SequenceIterator& SequenceIterator::operator++() {
@@ -71,19 +83,43 @@ SequenceIterator::reference SequenceIterator::operator[](difference_type i) {
 }
 
 bool SequenceIterator::operator<(SequenceIterator other) {
-	return value < other.value;
+	if((infinite && other.infinite) || infinite) {
+		return false;
+	} else if(other.infinite) {
+		return true;
+	} else {
+		return value < other.value;
+	}
 }
 
 bool SequenceIterator::operator>(SequenceIterator other) {
-	return value > other.value;
+	if((infinite && other.infinite) || other.infinite) {
+		return false;
+	} else if(infinite) {
+		return true;
+	} else {
+		return value > other.value;
+	}
 }
 
 bool SequenceIterator::operator<=(SequenceIterator other) {
-	return value <= other.value;
+	if((infinite && other.infinite) || other.infinite) {
+		return true;
+	} else if(infinite) {
+		return false;
+	} else {
+		return value <= other.value;
+	}
 }
 
 bool SequenceIterator::operator>=(SequenceIterator other) {
-	return value >= other.value;
+	if((infinite && other.infinite) || infinite) {
+		return true;
+	} else if(other.infinite) {
+		return false;
+	} else {
+		return value >= other.value;
+	}
 }
 
 Sequence::Sequence()

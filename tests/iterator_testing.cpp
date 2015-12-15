@@ -51,6 +51,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_vector_to_rust_iterator) {
 BOOST_AUTO_TEST_CASE(iterator_library_infinite_size_failure) {
 	std::vector<int> vec{};
 	rust::Iterator<std::vector<int>::iterator> infIterator(vec.begin());
+
 	BOOST_CHECK_THROW(infIterator.size(), InfiniteRangeException);
 }
 
@@ -97,6 +98,14 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_filter) {
 	std::vector<int> expected{2,  4,  6,  8,  10, 12, 14, 16,
 	                          18, 20, 22, 24, 26, 28, 30};
 	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filtered.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_filtered_iterator_failures) {
+	auto iterator = rust::Sequence(1).filter([] (int) {return true; });
+
+	BOOST_CHECK_THROW(iterator.size(), UnknownValueException);
+	BOOST_CHECK_THROW(iterator.empty(), UnknownValueException);
+	BOOST_CHECK_THROW(iterator.collect<std::vector<int>>(), InfiniteRangeException);
 }
 
 BOOST_AUTO_TEST_CASE(iterator_library_collected_chained_filter) {
@@ -186,8 +195,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_collected_cycled_filtered_iterator) {
 
 	std::vector<int> expected{1, 3, 1, 3, 1, 1, 1, 3, 1, 3, 1, 1};
 	BOOST_CHECK_EQUAL(cycledFiltered.size(), 12);
-	BOOST_CHECK(
-	    std::equal(expected.begin(), expected.end(), cycledFiltered.begin()));
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), cycledFiltered.begin()));
 }
 
 BOOST_AUTO_TEST_CASE(iterator_library_collected_mapped_iterator) {
@@ -328,6 +336,44 @@ BOOST_AUTO_TEST_CASE(iterator_library_unzipped_filitered_zipped_iterator) {
 	    std::equal(expected2.begin(), expected2.end(), result2.begin()));
 }
 
+BOOST_AUTO_TEST_CASE(iterator_library_zipped_filtered_iterator) {
+	auto iterator = rust::Sequence(1, 7), iterator2 = rust::Sequence(5, 10);
+	std::vector<std::pair<int, int>> expected{{2, 5}, {4, 6}, {6, 7}};
+
+	std::vector<std::pair<int, int>> filteredChained =
+	  iterator.filter([](int x) { return x % 2 == 0; })
+	    .zip(iterator2)
+	    .collect<std::vector<std::pair<int, int>>>();
+
+	BOOST_CHECK_EQUAL(filteredChained.size(), 3);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filteredChained.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_zipped_values) {
+	auto iterator = rust::Sequence(1), iterator2 = rust::Sequence(5, 8);
+	std::vector<std::pair<int, int>> expected1{{1, 5}, {2, 6}, {3, 7}},
+	  expected2{{5, 1}, {6, 2}, {7, 3}};
+
+	std::vector<std::pair<int, int>> chained1 =
+	  iterator.zip(iterator2).collect<std::vector<std::pair<int, int>>>();
+
+	BOOST_CHECK_EQUAL(chained1.size(), 3);
+	BOOST_CHECK(std::equal(expected1.begin(), expected1.end(), chained1.begin()));
+
+	std::vector<std::pair<int, int>> chained2 =
+	  iterator2.zip(iterator).collect<std::vector<std::pair<int, int>>>();
+
+	BOOST_CHECK_EQUAL(chained2.size(), 3);
+	BOOST_CHECK(std::equal(expected2.begin(), expected2.end(), chained2.begin()));
+
+	auto chained3 = iterator.zip(iterator);
+
+	BOOST_CHECK_THROW((chained3.collect<std::vector<std::pair<int, int>>>()),
+	                  InfiniteRangeException);
+
+	BOOST_CHECK_EQUAL(chained3.empty(), false);
+}
+
 BOOST_AUTO_TEST_CASE(iterator_library_chained_iterator) {
 	auto iterator = rust::Sequence(1, 5), iterator2 = rust::Sequence(5, 10),
 	     expectedIt = rust::Sequence(1, 10);
@@ -352,8 +398,30 @@ BOOST_AUTO_TEST_CASE(iterator_library_mapped_chained_iterator) {
 	std::vector<int> expected = expectedIt.collect<std::vector<int>>();
 
 	BOOST_CHECK_EQUAL(mappedChained.size(), 9);
-	BOOST_CHECK(
-	    std::equal(expected.begin(), expected.end(), mappedChained.begin()));
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), mappedChained.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_chained_filtered_iterator) {
+	auto iterator = rust::Sequence(1, 5), iterator2 = rust::Sequence(5, 10);
+	std::vector<int> expected{2, 4, 5, 6, 7, 8, 9};
+
+	std::vector<int> filteredChained = iterator.filter([](int x) { return x % 2 == 0; })
+                                               .chain(iterator2)
+	                                           .collect<std::vector<int>>();
+
+	BOOST_CHECK_EQUAL(filteredChained.size(), 7);
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filteredChained.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_library_chained_iterator_values) {
+	auto iterator = rust::Sequence(1, 5), iterator2 = rust::Sequence(5, 10),
+	     iterator3 = rust::Sequence(5);
+
+	auto chained = iterator.chain(iterator2),
+		 infiniteChained = iterator.chain(iterator3);
+
+	BOOST_CHECK_EQUAL(chained.size(), 9);
+	BOOST_CHECK_THROW(infiniteChained.size(), InfiniteRangeException);
 }
 
 BOOST_AUTO_TEST_CASE(iterator_library_partitioned_iterator) {
