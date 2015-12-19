@@ -123,7 +123,7 @@ bool SequenceIterator::operator>=(SequenceIterator other) {
 }
 
 Sequence::Sequence()
-	: Iterator<SequenceIterator>(SequenceIterator(1)) {}
+	: Iterator<SequenceIterator>(SequenceIterator(0)) {}
 
 Sequence::Sequence(int begin)
 	: Iterator<SequenceIterator>(SequenceIterator(begin)) {}
