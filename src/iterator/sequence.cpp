@@ -78,7 +78,7 @@ SequenceIterator::difference_type SequenceIterator::operator-(SequenceIterator o
 	return value - other.value;
 }
 
-SequenceIterator::reference SequenceIterator::operator[](difference_type i) {
+SequenceIterator::value_type SequenceIterator::operator[](difference_type i) {
 	return *(*this + i);
 }
 

@@ -29,7 +29,7 @@ namespace rust {
 
 		difference_type operator-(SequenceIterator other);
 
-		reference operator[](difference_type i);
+		value_type operator[](difference_type i);
 
 		bool operator<(SequenceIterator other);
 		bool operator>(SequenceIterator other);
