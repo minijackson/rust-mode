@@ -86,8 +86,9 @@ namespace rust {
 		Filter_t predicate;
 
 		void advance() {
-			while(!this->origin.hasEnded()
-			  && !predicate((++this->origin).currentValue())  );
+			do {
+				++this->origin;
+			} while(!this->origin.hasEnded() && !predicate(this->origin.currentValue()));
 		}
 	};
 

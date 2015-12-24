@@ -10,7 +10,7 @@ libmode = ARGUMENTS.get("libmode", "release")
 if libmode == "release":
     env["CXXFLAGS"].extend(["-O2"])
 elif libmode == "debug":
-    env["CXXFLAGS"].extend(["-g"])
+    env["CXXFLAGS"].extend(["-ggdb"])
 elif libmode == "profile":
     env["CXXFLAGS"].extend(["-pg"])
     env["LINKFLAGS"] = ["-pg"]

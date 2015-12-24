@@ -357,7 +357,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_zipped_iterator) {
 	BOOST_CHECK(std::equal(expected.begin(), expected.end(), zipped.begin()));
 }
 
-BOOST_AUTO_TEST_CASE(iterator_library_filitered_zipped_iterator) {
+BOOST_AUTO_TEST_CASE(iterator_library_filtered_zipped_iterator) {
 	std::vector<int> vec{1, 2, 3, 4, 5, 6, 7, 8};
 	std::vector<char> vec2{'a', 'b', 'c', 'd', 'e'};
 	auto iterator = rust::iter(vec);
@@ -373,8 +373,7 @@ BOOST_AUTO_TEST_CASE(iterator_library_filitered_zipped_iterator) {
 	std::vector<std::pair<int, char>> expected{
 	    {1, 'a'}, {2, 'b'}, {4, 'd'}, {5, 'e'}};
 	BOOST_CHECK_EQUAL(filteredZipped.size(), 4);
-	BOOST_CHECK(
-	    std::equal(expected.begin(), expected.end(), filteredZipped.begin()));
+	BOOST_CHECK(std::equal(expected.begin(), expected.end(), filteredZipped.begin()));
 }
 
 BOOST_AUTO_TEST_CASE(iterator_library_unzipped_filitered_zipped_iterator) {
@@ -396,11 +395,9 @@ BOOST_AUTO_TEST_CASE(iterator_library_unzipped_filitered_zipped_iterator) {
 	std::vector<int> expected1{1, 2, 4, 5};
 	std::vector<char> expected2{'a', 'b', 'd', 'e'};
 	BOOST_CHECK_EQUAL(result1.size(), 4);
-	BOOST_CHECK(
-	    std::equal(expected1.begin(), expected1.end(), result1.begin()));
+	BOOST_CHECK(std::equal(expected1.begin(), expected1.end(), result1.begin()));
 	BOOST_CHECK_EQUAL(result2.size(), 4);
-	BOOST_CHECK(
-	    std::equal(expected2.begin(), expected2.end(), result2.begin()));
+	BOOST_CHECK(std::equal(expected2.begin(), expected2.end(), result2.begin()));
 }
 
 BOOST_AUTO_TEST_CASE(iterator_library_zipped_filtered_iterator) {

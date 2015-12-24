@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
-testEnv = Environment(CXXFLAGS=["-std=c++11", "-O2", "-Wall", "-Wextra"], CPPPATH=["#src"], LIBS=["rust-mode", "boost_unit_test_framework"], LIBPATH=["#"])
-#testEnv = Environment(CXXFLAGS=["-std=c++11", "-O2", "-Wall", "-Wextra"], CXX="clang++", CPPPATH=["#src"], LIBS=["rust-mode", "boost_unit_test_framework"], LIBPATH=["#"])
-#testEnv = Environment(CXXFLAGS=["-std=c++11", "-ggdb", "-Wall", "-Wextra"], CPPPATH=["#src"], LIBS=["rust-mode", "boost_unit_test_framework"], LIBPATH=["#"])
+testEnv = Environment(CXXFLAGS=["-std=c++11", "-Wall", "-Wextra"], CPPPATH=["#src"], LIBS=["rust-mode", "boost_unit_test_framework"], LIBPATH=["#"])
 
 CXX = ARGUMENTS.get("CXX", "g++")
 testEnv["CXX"] = CXX
@@ -12,7 +10,7 @@ testmode = ARGUMENTS.get("testmode", "release")
 if testmode == "release":
     testEnv["CXXFLAGS"].extend(["-O2"])
 elif testmode == "debug":
-    testEnv["CXXFLAGS"].extend(["-g"])
+    testEnv["CXXFLAGS"].extend(["-ggdb"])
 elif testmode == "profile":
     testEnv["CXXFLAGS"].extend(["-pg"])
     testEnv["LINKFLAGS"] = ["-pg"]
