@@ -15,11 +15,12 @@ compiler:
     - gcc
 before_install:
     - mkdir -p $HOME/.local/bin
+    - ln -s /usr/bin/python3.5 $HOME/.local/bin/python3
+    - export PATH="$PATH:$HOME/.local/bin"
     - pip install --user cpp-coveralls
     - git clone https://github.com/mesonbuild/meson.git /tmp/meson
     - cd /tmp/meson
     - ./install_meson.py --prefix $HOME/.local/
-    - export PATH="$PATH:$HOME/.local/bin"
 script:
     - mkdir build && cd build
     - meson --enable-gcov ..
