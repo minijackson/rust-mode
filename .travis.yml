@@ -9,17 +9,17 @@ addons:
             - g++-4.8
             - libboost-test1.55-dev
             - python3.4
+            - python3
             - ninja-build
 compiler:
     - gcc
 before_install:
     - mkdir -p $HOME/.local/bin
-    - ln -s /usr/bin/python3.4 $HOME/.local/bin/python3
-    - export PATH="$PATH:$HOME/.local/bin"
     - pip install --user cpp-coveralls
     - git clone https://github.com/mesonbuild/meson.git /tmp/meson
     - cd /tmp/meson
     - ./install_meson.py --prefix $HOME/.local/
+    - export PATH="$PATH:$HOME/.local/bin"
 script:
     - mkdir build && cd build
     - meson --enable-gcov ..
