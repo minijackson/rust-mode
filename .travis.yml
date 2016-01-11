@@ -19,7 +19,7 @@ before_install:
     - export PATH="$PATH:$HOME/.local/bin"
     - pip install --user cpp-coveralls
     - git clone https://github.com/mesonbuild/meson.git /tmp/meson
-    - /tmp/meson/install_meson.py --prefix $HOME/.local/
+    - (cd /tmp/meson && ./install_meson.py --prefix $HOME/.local/)
 script:
     - mkdir build
     - cd build
