@@ -23,8 +23,7 @@ before_install:
     - ./install_meson.py --prefix $HOME/.local/
 script:
     - mkdir build
-    - cd build
-    - meson --enable-gcov ..
-    - ninja test
+    - cd build && meson --enable-gcov ..
+    - cd build && ninja test
 after_success:
-    - coveralls --gcov /usr/bin/gcov-4.8 --gcov-options '\-lp'
+    - cd build && coveralls --gcov /usr/bin/gcov-4.8 --gcov-options '\-lp'
