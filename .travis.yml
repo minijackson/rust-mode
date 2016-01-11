@@ -8,14 +8,18 @@ addons:
         packages:
             - g++-4.8
             - libboost-test1.55-dev
+            - ninja-build
 compiler:
     - gcc
 before_install:
     - pip install --user cpp-coveralls
+    - git clone https://github.com/mesonbuild/meson.git /tmp/meson
+    - cd /tmp/meson
+    - ./install_meson.py --prefix $HOME/.local/
+    - export PATH="$PATH:$HOME/.local/bin"
 script:
-    - scons libmode=coverall testmode=coverall CXX="g++-4.8"
-    - ./tests/error_testing
-    - ./tests/iterator_testing
-    - ./tests/utils_testing
+    - mkdir build && cd build
+    - meson --enable-gcov ..
+    - ninja test
 after_success:
     - coveralls --gcov /usr/bin/gcov-4.8 --gcov-options '\-lp'
