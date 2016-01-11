@@ -1,5 +1,8 @@
 sudo: false
 language: c++
+python:
+  - "2.7"
+  - "3.4"
 addons:
     apt:
         sources:
@@ -8,8 +11,6 @@ addons:
         packages:
             - g++-4.8
             - libboost-test1.55-dev
-            - python3.4
-            - python3
             - ninja-build
 compiler:
     - gcc
