@@ -26,6 +26,7 @@ script:
     - mkdir build
     - cd build
     - meson --enable-gcov ..
+    - sed 's/ninja_required_version = 1.5.1//' build.ninja | sponge build.ninja
     - ninja test
 after_success:
     - coveralls --gcov /usr/bin/gcov-4.8 --gcov-options '\-lp'
