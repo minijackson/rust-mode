@@ -4,10 +4,10 @@
 #include "../exceptions/infinite_range_exception.hpp"
 #include "../exceptions/unknown_value_exception.hpp"
 
+#include <functional>
 #include <iterator>
 #include <limits>
 #include <type_traits>
-#include <functional>
 
 namespace rust {
 
@@ -28,7 +28,9 @@ namespace rust {
 		explicit BasicRange(iterator beginIt)
 			: beginIt(beginIt), noEnd(true) {}
 
-		BasicRange(bool hasEnd) : noEnd(!hasEnd) {}
+		explicit BasicRange(bool hasEnd) : noEnd(!hasEnd) {}
+
+		virtual ~BasicRange() = default;
 
 		T currentValue() {
 			return *beginIt;

@@ -4,6 +4,9 @@ gmon.out
 *.gcno
 *.gcov
 
+# Build directories
+/build*
+
 # Binairies
 tests/iterator_testing
 tests/error_testing
