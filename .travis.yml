@@ -1,17 +1,16 @@
 sudo: false
 language: c++
-python:
-  - "2.7"
-  - "3.4"
 addons:
     apt:
         sources:
             - ubuntu-toolchain-r-test
             - boost-latest
+            - deadsnakes
         packages:
             - g++-4.8
             - libboost-test1.55-dev
             - ninja-build
+            - python3.5
 compiler:
     - gcc
 before_install:
