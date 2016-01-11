@@ -22,7 +22,8 @@ before_install:
     - cd /tmp/meson
     - ./install_meson.py --prefix $HOME/.local/
 script:
-    - mkdir build && cd build
+    - mkdir build
+    - cd build
     - meson --enable-gcov ..
     - ninja test
 after_success:
